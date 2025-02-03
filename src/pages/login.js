@@ -1,7 +1,7 @@
 export default function Login() {
     return (
       <div>
-        <h1>Login Page test</h1>
+        <h1>Login Page</h1>
         {/* Form here */}
       </div>
     );
