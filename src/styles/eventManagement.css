@@ -1,0 +1,78 @@
+/* Global styles */
+body {
+    background-color: #a38175;
+    font-family: 'Georgia', serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Container styling */
+.container {
+    background-color: #f3e6d5;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+    width: 500px;
+    text-align: center;
+}
+
+/* Heading */
+h1 {
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 2px 2px #00000022;
+}
+
+/* Label styling */
+label {
+    display: block;
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: left;
+    font-weight: bold;
+}
+
+/* Input and textarea styling */
+input, textarea, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 2px solid #4a453f;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #f3e6d5;
+    color: #3c3c3c;
+}
+
+/* Styling for textareas */
+textarea {
+    background-color: #e8c5b7;
+    height: 60px;
+}
+
+/* Select dropdown styling */
+select {
+    background-color: #e8c5b7;
+    cursor: pointer;
+}
+
+/* Date input container */
+.date-input {
+    display: flex;
+    align-items: center;
+}
+
+/* Date input field */
+.date-input input {
+    flex: 1;
+}
+
+/* Optional: Add hover effect for inputs */
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #8b5e3b;
+    box-shadow: 0 0 5px rgba(139, 94, 59, 0.5);
+}
