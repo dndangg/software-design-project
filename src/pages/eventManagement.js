@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/eventManagement.css"; // Corrected import
+// Removed import
 
 export default function EventManagement() {
   const [eventName, setEventName] = useState("");
