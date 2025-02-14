@@ -57,11 +57,11 @@ const Signout: React.FC = () => {
           </div>
         </div>
       </nav>
-      
+
       {/* Main Content */}
       <div className="bg-[#f3e6d5] p-16 rounded-lg shadow-lg w-[95%] max-w-4xl border border-[#554f42]">
         <h1 className="text-center text-3xl font-bold text-[#2d2a26] font-serif">
-          Signout
+          You have been signed out! Redirecting to the home page...
         </h1>
       </div>
     </div>
