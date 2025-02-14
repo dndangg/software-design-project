@@ -1,17 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 
-const Login: React.FC = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Logging in with:", { email, password });
-  };
-
+const VolunteerHistory: React.FC = () => {
   return (
-    <div className="fixed top-0 left-0 w-screen h-screen bg-[#808977] flex items-center justify-center">
+    <div>
       {/* Navigation Bar */}
       <nav className="bg-gray-800 text-white px-4 py-3 fixed top-0 left-0 right-0 z-10 shadow-lg">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
@@ -24,6 +16,9 @@ const Login: React.FC = () => {
           <div className="flex items-center space-x-4">
             <Link href="/login" className="hover:text-gray-400">
               Login
+            </Link>
+            <Link href="/signout" className="hover:text-gray-400">
+              Sign Out
             </Link>
             <Link href="/registration" className="hover:text-gray-400">
               Registration
@@ -62,54 +57,43 @@ const Login: React.FC = () => {
           </div>
         </div>
       </nav>
-      
-      {/* Login Box */}
-      <div className="bg-[#e4dbcf] p-16 rounded-lg shadow-lg w-[95%] max-w-4xl border border-[#554f42]">
-        <h1 className="text-center text-3xl font-bold mb-6 text-[#2d2a26] font-serif">
-          Welcome to Volunteering!
-        </h1>
 
-        <form onSubmit={handleLogin} className="flex flex-col">
-          {/* Email Field */}
-          <label className="text-[#2d2a26] font-semibold mb-2 text-lg">Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="border border-[#554f42] w-full p-4 text-lg rounded-md bg-[#f9f6f1] focus:outline-none focus:ring-2 focus:ring-[#554f42]"
-          />
-
-          {/* Password Field */}
-          <label className="text-[#2d2a26] font-semibold mt-4 mb-2 text-lg">Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="border border-[#554f42] w-full p-4 text-lg rounded-md bg-[#f9f6f1] focus:outline-none focus:ring-2 focus:ring-[#554f42]"
-          />
-
-          {/* Login Button */}
-          <button
-            type="submit"
-            className="bg-[#3d3f32] text-white w-full py-4 text-lg rounded-md mt-6 font-semibold shadow-md hover:bg-[#2d2f26] transition"
-          >
-            Login
-          </button>
-        </form>
-
-        {/* Sign up Link */}
-        <p className="text-center mt-6 text-lg text-[#2d2a26]">
-          Don’t have an account?
-          <br />
-          <Link href="/signup" className="text-[#3d3f32] font-bold hover:underline">
-            Register
-          </Link>
-        </p>
+      {/* Main Content */}
+      <div className="fixed inset-0 flex items-center justify-center bg-[#808977]">
+        <div className="bg-[#f3e6d5] p-10 rounded-lg shadow-lg w-[80%] text-[#2d2a26]">
+          <h1 className="text-center text-3xl font-bold mb-6 text-[#2d2a26]">Volunteer History</h1>
+          <table className="w-full border-collapse border border-black">
+            <thead>
+              <tr className="bg-[#e8c5b7] border border-black">
+                <th className="border border-black p-2">Volunteer Name</th>
+                <th className="border border-black p-2">Participation Status</th>
+                <th className="border border-black p-2">Event Name</th>
+                <th className="border border-black p-2">Event Description</th>
+                <th className="border border-black p-2">Location</th>
+                <th className="border border-black p-2">Required Skills</th>
+                <th className="border border-black p-2">Urgency</th>
+                <th className="border border-black p-2">Event Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...Array(4)].map((_, index) => (
+                <tr key={index} className="bg-[#e8c5b7] border border-black">
+                  <td className="border border-black p-2"></td>
+                  <td className="border border-black p-2"></td>
+                  <td className="border border-black p-2"></td>
+                  <td className="border border-black p-2"></td>
+                  <td className="border border-black p-2"></td>
+                  <td className="border border-black p-2"></td>
+                  <td className="border border-black p-2"></td>
+                  <td className="border border-black p-2"></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default VolunteerHistory;

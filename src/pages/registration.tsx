@@ -29,10 +29,10 @@ const Registration: React.FC = () => {
             <Link href="/eventManagement" className="hover:text-gray-400">
               Event Management
             </Link>
-            <Link href="/voMatching" className="hover:text-gray-400">
+            <Link href="/volunteerMatching" className="hover:text-gray-400">
               Volunteer Matching
             </Link>
-            <Link href="/voHistory" className="hover:text-gray-400">
+            <Link href="/volunteerHistory" className="hover:text-gray-400">
               Volunteer History
             </Link>
             <button className="relative hover:text-gray-400">

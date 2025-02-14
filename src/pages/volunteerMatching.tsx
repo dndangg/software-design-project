@@ -1,17 +1,21 @@
 import React, { useState } from "react";
 import Link from "next/link";
 
-const Login: React.FC = () => {
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+// Define the component
+const VolunteerMatching: React.FC = () => {
+  // State variables for volunteer name and matched event
+  const [volunteerName, setVolunteerName] = useState<string>("");
+  const [matchedEvent, setMatchedEvent] = useState<string>("");
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Logging in with:", { email, password });
+  // Handle volunteer matching logic
+  const handleMatch = () => {
+    if (volunteerName) {
+      setMatchedEvent("Blood Drive"); // Example matched event
+    }
   };
 
   return (
-    <div className="fixed top-0 left-0 w-screen h-screen bg-[#808977] flex items-center justify-center">
+    <div>
       {/* Navigation Bar */}
       <nav className="bg-gray-800 text-white px-4 py-3 fixed top-0 left-0 right-0 z-10 shadow-lg">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
@@ -24,6 +28,9 @@ const Login: React.FC = () => {
           <div className="flex items-center space-x-4">
             <Link href="/login" className="hover:text-gray-400">
               Login
+            </Link>
+            <Link href="/signout" className="hover:text-gray-400">
+              Sign Out
             </Link>
             <Link href="/registration" className="hover:text-gray-400">
               Registration
@@ -62,54 +69,41 @@ const Login: React.FC = () => {
           </div>
         </div>
       </nav>
-      
-      {/* Login Box */}
-      <div className="bg-[#e4dbcf] p-16 rounded-lg shadow-lg w-[95%] max-w-4xl border border-[#554f42]">
-        <h1 className="text-center text-3xl font-bold mb-6 text-[#2d2a26] font-serif">
-          Welcome to Volunteering!
-        </h1>
 
-        <form onSubmit={handleLogin} className="flex flex-col">
-          {/* Email Field */}
-          <label className="text-[#2d2a26] font-semibold mb-2 text-lg">Email</label>
+      {/* Main Content */}
+      <div className="fixed inset-0 flex items-center justify-center bg-[#808977]">
+        <div className="p-8 bg-[#f3e6d5] shadow-lg rounded-lg w-96 text-center">
+          <h2 className="text-2xl font-bold mb-6 text-[#2d2a26]">Volunteer Matching</h2>
+          
+          {/* Volunteer Name Input */}
+          <label className="block text-left mb-2 font-semibold text-[#2d2a26]">Volunteer Name</label>
           <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="border border-[#554f42] w-full p-4 text-lg rounded-md bg-[#f9f6f1] focus:outline-none focus:ring-2 focus:ring-[#554f42]"
+            type="text"
+            value={volunteerName}
+            onChange={(e) => setVolunteerName(e.target.value)}
+            className="border w-full p-2 rounded mb-4"
           />
 
-          {/* Password Field */}
-          <label className="text-[#2d2a26] font-semibold mt-4 mb-2 text-lg">Password</label>
+          {/* Matched Event Display */}
+          <label className="block text-left mb-2 font-semibold text-[#2d2a26]">Matched Event</label>
           <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="border border-[#554f42] w-full p-4 text-lg rounded-md bg-[#f9f6f1] focus:outline-none focus:ring-2 focus:ring-[#554f42]"
+            type="text"
+            value={matchedEvent}
+            readOnly
+            className="border w-full p-2 rounded mb-4"
           />
 
-          {/* Login Button */}
+          {/* Match Button */}
           <button
-            type="submit"
-            className="bg-[#3d3f32] text-white w-full py-4 text-lg rounded-md mt-6 font-semibold shadow-md hover:bg-[#2d2f26] transition"
+            onClick={handleMatch}
+            className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800"
           >
-            Login
+            Match!
           </button>
-        </form>
-
-        {/* Sign up Link */}
-        <p className="text-center mt-6 text-lg text-[#2d2a26]">
-          Don’t have an account?
-          <br />
-          <Link href="/signup" className="text-[#3d3f32] font-bold hover:underline">
-            Register
-          </Link>
-        </p>
+        </div>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default VolunteerMatching;
