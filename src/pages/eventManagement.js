@@ -7,7 +7,7 @@ export default function EventManagement() {
   return (
     <div className="flex justify-center items-center min-h-screen bg-[#a38175]">
       <div className="bg-[#f3e6d5] p-8 rounded-lg shadow-md w-[500px]">
-        <h1 className="text-2xl font-bold text-center mb-4">Event Management</h1>
+        <h1 className="text-2xl font-bold text-center mb-4 text-[#2d2a26]">Event Management</h1>
 
         <form>
           {/* Event Name */}
