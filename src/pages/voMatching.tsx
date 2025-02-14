@@ -58,10 +58,10 @@ const VolunteerMatching: React.FC = () => {
       {/* Main Content */}
       <div className="flex justify-center items-center h-screen bg-[#899481] pt-20">
         <div className="p-8 bg-[#f3e6d5] shadow-lg rounded-lg w-96 text-center">
-          <h2 className="text-2xl font-bold mb-6">Volunteer Matching</h2>
+          <h2 className="text-2xl font-bold mb-6 text-[#2d2a26]">Volunteer Matching</h2>
           
           {/* Volunteer Name Input */}
-          <label className="block text-left mb-2 font-semibold">Volunteer Name</label>
+          <label className="block text-left mb-2 font-semibold text-[#2d2a26]">Volunteer Name</label>
           <input
             type="text"
             value={volunteerName}
@@ -70,7 +70,7 @@ const VolunteerMatching: React.FC = () => {
           />
 
           {/* Matched Event Display */}
-          <label className="block text-left mb-2 font-semibold">Matched Event</label>
+          <label className="block text-left mb-2 font-semibold text-[#2d2a26]">Matched Event</label>
           <input
             type="text"
             value={matchedEvent}
