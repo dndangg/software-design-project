@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 
 const VolunteerHistory: React.FC = () => {
   return (
@@ -7,18 +8,18 @@ const VolunteerHistory: React.FC = () => {
       <nav className="bg-gray-800 text-white px-4 py-3 fixed top-0 left-0 right-0 z-10 shadow-lg">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
           {/* Left side: Home */}
-          <a href="/" className="text-xl font-bold">
+          <Link href="/" className="text-xl font-bold">
             Home
-          </a>
+          </Link>
 
           {/* Right side: Login, Sign Out, and Notification */}
           <div className="flex items-center space-x-4">
-            <a href="/login" className="hover:text-gray-400">
+            <Link href="/login" className="hover:text-gray-400">
               Login
-            </a>
-            <a href="/signout" className="hover:text-gray-400">
+            </Link>
+            <Link href="/signout" className="hover:text-gray-400">
               Sign Out
-            </a>
+            </Link>
             <button className="relative hover:text-gray-400">
               {/* Notification Icon */}
               <svg
