@@ -45,7 +45,7 @@ const VolunteerHistory: React.FC = () => {
 
       {/* Main Content */}
       <div className="bg-[#899481] flex items-center justify-center min-h-screen pt-20">
-        <div className="bg-[#f3e6d5] p-10 rounded-lg shadow-lg w-[80%]">
+        <div className="bg-[#f3e6d5] p-10 rounded-lg shadow-lg w-[80%] text-[#2d2a26]">
           <h1 className="text-center text-3xl font-bold mb-6">Volunteer History</h1>
           <table className="w-full border-collapse border border-black">
             <thead>
