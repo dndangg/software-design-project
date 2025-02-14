@@ -25,9 +25,6 @@ const Login: React.FC = () => {
             <Link href="/login" className="hover:text-gray-400">
               Login
             </Link>
-            <Link href="/signout" className="hover:text-gray-400">
-              Sign Out
-            </Link>
             <Link href="/registration" className="hover:text-gray-400">
               Registration
             </Link>
