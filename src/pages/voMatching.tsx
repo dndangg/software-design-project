@@ -75,7 +75,7 @@ const VolunteerMatching: React.FC = () => {
             type="text"
             value={matchedEvent}
             readOnly
-            className="border w-full p-2 rounded mb-4 bg-gray-100"
+            className="border w-full p-2 rounded mb-4"
           />
 
           {/* Match Button */}
