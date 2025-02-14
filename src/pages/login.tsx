@@ -11,7 +11,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="bg-[#808977] flex items-center justify-center min-h-screen">
+    <div className="fixed top-0 left-0 w-screen h-screen bg-[#808977] flex items-center justify-center">
       {/* Login Box */}
       <div className="bg-[#e4dbcf] p-16 rounded-lg shadow-lg w-[95%] max-w-4xl border border-[#554f42]">
         <h1 className="text-center text-3xl font-bold mb-6 text-[#2d2a26] font-serif">
