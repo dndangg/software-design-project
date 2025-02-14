@@ -56,7 +56,7 @@ const VolunteerMatching: React.FC = () => {
       </nav>
 
       {/* Main Content */}
-      <div className="flex justify-center items-center h-screen bg-[#899481] pt-20">
+      <div className="fixed inset-0 flex items-center justify-center bg-[#808977]">
         <div className="p-8 bg-[#f3e6d5] shadow-lg rounded-lg w-96 text-center">
           <h2 className="text-2xl font-bold mb-6 text-[#2d2a26]">Volunteer Matching</h2>
           
