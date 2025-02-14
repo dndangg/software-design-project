@@ -44,7 +44,7 @@ const VolunteerHistory: React.FC = () => {
       </nav>
 
       {/* Main Content */}
-      <div className="bg-[#899481] flex items-center justify-center min-h-screen pt-20">
+      <div className="fixed inset-0 flex items-center justify-center bg-[#808977]">
         <div className="bg-[#f3e6d5] p-10 rounded-lg shadow-lg w-[80%] text-[#2d2a26]">
           <h1 className="text-center text-3xl font-bold mb-6 text-[#2d2a26]">Volunteer History</h1>
           <table className="w-full border-collapse border border-black">
