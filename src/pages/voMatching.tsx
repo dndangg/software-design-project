@@ -24,13 +24,28 @@ const VolunteerMatching: React.FC = () => {
             Home
           </Link>
 
-          {/* Right side: Login, Sign Out, and Notification */}
+          {/* Right side: Login, Sign Out, Registration, Profile Management, Event Management, Volunteer Matching, Volunteer History, and Notification */}
           <div className="flex items-center space-x-4">
             <Link href="/login" className="hover:text-gray-400">
               Login
             </Link>
             <Link href="/signout" className="hover:text-gray-400">
               Sign Out
+            </Link>
+            <Link href="/registration" className="hover:text-gray-400">
+              Registration
+            </Link>
+            <Link href="/profileManagement" className="hover:text-gray-400">
+              Profile Management
+            </Link>
+            <Link href="/eventManagement" className="hover:text-gray-400">
+              Event Management
+            </Link>
+            <Link href="/voMatching" className="hover:text-gray-400">
+              Volunteer Matching
+            </Link>
+            <Link href="/voHistory" className="hover:text-gray-400">
+              Volunteer History
             </Link>
             <button className="relative hover:text-gray-400">
               {/* Notification Icon */}

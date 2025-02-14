@@ -26,7 +26,7 @@ export default function EventManagement() {
             className="w-full p-2 mt-1 border-2 border-[#4a453f] rounded-md bg-[#f3e6d5] text-gray-700"
           />
           <p className="text-sm text-gray-600 mt-1">{eventName.length}/100 characters</p>
-
+          
           {/* Location */}
           <label className="block text-sm font-medium mt-4" htmlFor="location">
             Location
