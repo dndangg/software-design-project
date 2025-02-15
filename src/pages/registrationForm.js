@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import "../styles/registrationForm.css"; // Ensure this file exists
+import Link from "next/link";
+// import "../styles/registrationForm.css"; // Commented out
 
 export default function RegistrationForm() {  // 
   const [formData, setFormData] = useState({
@@ -60,7 +61,7 @@ export default function RegistrationForm() {  //
         </form>
 
         <p className="register-login-text">
-          Already have an account? <a href="/login">Go to login page</a>
+          Already have an account? <Link href="/login">Go to login page</Link>
         </p>
       </div>
     </div>
