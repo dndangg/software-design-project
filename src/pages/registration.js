@@ -1,11 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+// import "../styles/registrationForm.css"; // Commented out
 
-const Registration: React.FC = () => {
+export default function RegistrationForm() {  // 
+  const [formData, setFormData] = useState({
+    accountType: "",
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert("Registration Successful!");
+  };
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#808977]">
-          {/* Navigation Bar */}
-          <nav className="bg-gray-800 text-white px-4 py-3 fixed top-0 left-0 right-0 z-10 shadow-lg">
+    <div className="register-container">
+                {/* Navigation Bar */}
+                <nav className="bg-gray-800 text-white px-4 py-3 fixed top-0 left-0 right-0 z-10 shadow-lg">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
           {/* Left side: Home */}
           <Link href="/" className="text-xl font-bold">
@@ -57,15 +73,50 @@ const Registration: React.FC = () => {
           </div>
         </div>
       </nav>
-      
-      {/* Main Content */}
-      <div className="bg-[#f3e6d5] p-16 rounded-lg shadow-lg w-[95%] max-w-4xl border border-[#554f42]">
-        <h1 className="text-center text-3xl font-bold text-[#2d2a26] font-serif">
-          Registration
-        </h1>
+      <div className="register-box">
+        <h1 className="register-title">New Here? Register Below!</h1>
+
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="accountType">Account Type</label>
+          <input
+            type="text"
+            id="accountType"
+            name="accountType"
+            placeholder="Enter account type"
+            value={formData.accountType}
+            onChange={handleChange}
+            required
+          />
+
+          <label htmlFor="email">Username (Email Address)</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+
+          <button type="submit" className="register-button">Register</button>
+        </form>
+
+        <p className="register-login-text">
+          Already have an account? <Link href="/login">Go to login page</Link>
+        </p>
       </div>
     </div>
   );
-};
-
-export default Registration;
+}
