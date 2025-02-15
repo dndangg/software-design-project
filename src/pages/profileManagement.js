@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/profileManagement.css";
+
 
 export default function ProfileManagement() {
   const [formData, setFormData] = useState({
