@@ -1,0 +1,98 @@
+/* Background */
+body {
+    background-color: #7a836f;
+    font-family: 'Georgia', serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* Form Container */
+.profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.profile-box {
+    background-color: #e8c5b7;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+    width: 550px;
+    text-align: center;
+}
+
+/* Title */
+.profile-title {
+    font-size: 26px;
+    font-weight: bold;
+    text-shadow: 2px 2px #00000022;
+    margin-bottom: 20px;
+}
+
+/* Form Group */
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+/* Input Fields */
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #4a453f;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #f3e6d5;
+    color: #3c3c3c;
+}
+
+/* Styling for textareas */
+textarea {
+    height: 60px;
+}
+
+/* Form Row for City, State, Zip */
+.form-row {
+    display: flex;
+    gap: 10px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+/* Focus effect for inputs */
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Button */
+.profile-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #404d37;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 15px;
+    cursor: pointer;
+}
+
+.profile-button:hover {
+    background-color: #3a4531;
+}
