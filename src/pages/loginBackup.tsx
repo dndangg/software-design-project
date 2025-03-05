@@ -2,50 +2,12 @@ import React, { useState } from "react";
 import Link from "next/link";
 
 const Login: React.FC = () => {
-  // Handles email and password input
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  // Handles error messages
-  const [error, setError] = useState<string | null>(null);
-
-  // Handles success messages
-  const [message, setMessage] = useState<string | null>(null);
-
-  // Handles login form submission
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault(); // Prevents the default form submission behavior
-    setError(null); // Clears previous error messages
-    setMessage(null); // Clears previous success messages
-
-    try {
-      // Sends a login request to the backend API
-      const response = await fetch("/api/authentication/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }), // Sends user credentials
-      });
-
-      const data = await response.json();
-
-      // Throws an error is the response is not successful
-      if (!response.ok) {
-        throw new Error(data.error || "Something went wrong");
-      }
-
-      setMessage("Login successful!");
-      console.log("User Data:", data.user);
-      
-      // Redirect to a temporary success page upon login
-      window.location.href = "/successfulLogin"; 
-      
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Something went wrong.");
-      }
-    }
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Logging in with:", { email, password });
   };
 
   return (
@@ -106,10 +68,6 @@ const Login: React.FC = () => {
         <h1 className="text-center text-3xl font-bold mb-6 text-[#2d2a26] font-serif">
           Welcome to Volunteering!
         </h1>
-
-        {/* Error or success message */}
-        {error && <p className="text-red-600 text-center">{error}</p>}
-        {message && <p className="text-green-600 text-center">{message}</p>}
 
         <form onSubmit={handleLogin} className="flex flex-col">
           {/* Email Field */}
