@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 
-
 export default function ProfileManagement() {
   const [formData, setFormData] = useState({
     fullName: "",
@@ -15,68 +14,71 @@ export default function ProfileManagement() {
     date: "",
   });
 
+  const [errors, setErrors] = useState({});
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: "" });
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Profile Updated Successfully!");
+
+    // Validate form fields
+    const newErrors = {};
+    if (!formData.fullName) newErrors.fullName = "Full Name is required";
+    if (!formData.skills) newErrors.skills = "Skills are required";
+    if (!formData.address1) newErrors.address1 = "Address Line 1 is required";
+    if (!formData.city) newErrors.city = "City is required";
+    if (!formData.state) newErrors.state = "State is required";
+    if (!formData.zip) newErrors.zip = "Zip is required";
+    if (!formData.date) newErrors.date = "Date is required";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    try {
+      // Call the API to update the profile
+      const response = await fetch("/api/profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "hardcoded-token", // Simulate authentication
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Profile updated successfully!");
+        console.log("Updated Profile:", data.profile);
+      } else {
+        alert(data.message || "Failed to update profile");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("An error occurred while updating the profile");
+    }
   };
 
+  //Body of User Profile Management Page
   return (
     <div className="profile-container">
-
-            {/* Navigation Bar */}
-            <nav className="bg-gray-800 text-white px-4 py-3 fixed top-0 left-0 right-0 z-10 shadow-lg">
+      <nav className="bg-gray-800 text-white px-4 py-3 fixed top-0 left-0 right-0 z-10 shadow-lg">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
-          {/* Left side: Home */}
           <Link href="/" className="text-xl font-bold">
             Home
           </Link>
-
-          {/* Right side: Login, Sign Out, Registration, Profile Management, Event Management, Volunteer Matching, Volunteer History, and Notification */}
           <div className="flex items-center space-x-4">
-            <Link href="/profileManagement" className="hover:text-gray-400">
-              Profile
-            </Link>
-            <Link href="/signout" className="hover:text-gray-400">
-              Sign Out
-            </Link>
-            <Link href="/registration" className="hover:text-gray-400">
-              Registration
-            </Link>
-            <Link href="/profileManagement" className="hover:text-gray-400">
-              Profile Management
-            </Link>
-            <Link href="/eventManagement" className="hover:text-gray-400">
-              Event Management
-            </Link>
-            <Link href="/volunteerMatching" className="hover:text-gray-400">
-              Volunteer Matching
-            </Link>
-            <Link href="/volunteerHistory" className="hover:text-gray-400">
-              Volunteer History
-            </Link>
-            <button className="relative hover:text-gray-400">
-              {/* Notification Icon */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M15 17h5l-1.405-1.405A2.003 2.003 0 0118 14V9a6 6 0 10-12 0v5a2.003 2.003 0 01-1.595 1.595L4 17h5m6 0v1a3 3 0 11-6 0v-1"
-                />
-              </svg>
-              {/* Notification Badge */}
-              <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>
-            </button>
+            <Link href="/profileManagement" className="hover:text-gray-400">Profile</Link>
+            <Link href="/signout" className="hover:text-gray-400">Sign Out</Link>
+            <Link href="/eventManagement" className="hover:text-gray-400">Event Management</Link>
           </div>
         </div>
       </nav>
@@ -91,7 +93,6 @@ export default function ProfileManagement() {
               type="text"
               id="fullName"
               name="fullName"
-              placeholder="Enter full name"
               value={formData.fullName}
               onChange={handleChange}
               required
@@ -100,13 +101,7 @@ export default function ProfileManagement() {
 
           <div className="form-group">
             <label htmlFor="skills">Select Skills *</label>
-            <select
-              id="skills"
-              name="skills"
-              value={formData.skills}
-              onChange={handleChange}
-              required
-            >
+            <select id="skills" name="skills" value={formData.skills} onChange={handleChange} required>
               <option value="">Select Skills</option>
               <option value="coding">Coding</option>
               <option value="design">Design</option>
@@ -120,7 +115,6 @@ export default function ProfileManagement() {
               type="text"
               id="address1"
               name="address1"
-              placeholder="Enter address"
               value={formData.address1}
               onChange={handleChange}
               required
@@ -128,70 +122,37 @@ export default function ProfileManagement() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="address2">Address Line 2</label>
+            <label htmlFor="city">City *</label>
             <input
               type="text"
-              id="address2"
-              name="address2"
-              placeholder="Enter address"
-              value={formData.address2}
+              id="city"
+              name="city"
+              value={formData.city}
               onChange={handleChange}
+              required
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="preferences">Preferences</label>
-            <textarea
-              id="preferences"
-              name="preferences"
-              placeholder="Enter preferences"
-              value={formData.preferences}
-              onChange={handleChange}
-            ></textarea>
+            <label htmlFor="state">State *</label>
+            <select id="state" name="state" value={formData.state} onChange={handleChange} required>
+              <option value="">Select State</option>
+              <option value="TX">Texas</option>
+              <option value="CA">California</option>
+              <option value="NY">New York</option>
+            </select>
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="city">City *</label>
-              <input
-                type="text"
-                id="city"
-                name="city"
-                placeholder="Enter city"
-                value={formData.city}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="state">State *</label>
-              <select
-                id="state"
-                name="state"
-                value={formData.state}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select State</option>
-                <option value="TX">Texas</option>
-                <option value="CA">California</option>
-                <option value="NY">New York</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="zip">Zip *</label>
-              <input
-                type="text"
-                id="zip"
-                name="zip"
-                placeholder="Enter zip"
-                value={formData.zip}
-                onChange={handleChange}
-                required
-              />
-            </div>
+          <div className="form-group">
+            <label htmlFor="zip">Zip *</label>
+            <input
+              type="text"
+              id="zip"
+              name="zip"
+              value={formData.zip}
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <div className="form-group">
@@ -212,3 +173,4 @@ export default function ProfileManagement() {
     </div>
   );
 }
+
