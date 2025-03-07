@@ -1,7 +1,56 @@
-import React from "react";
+// pages/volunteerHistory.tsx
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 
+// Define TypeScript interface for volunteer history data
+interface VolunteerHistoryItem {
+  id: number;
+  volunteerName: string;
+  participationStatus: string;
+  eventName: string;
+  eventDescription: string;
+  location: string;
+  requiredSkills: string[];
+  urgency: string;
+  eventDate: string;
+}
+
+// Define interface for API response
+interface ApiResponse {
+  success: boolean;
+  data: VolunteerHistoryItem[];
+  message?: string;
+}
+
 const VolunteerHistory: React.FC = () => {
+  // State to store volunteer history data
+  const [historyData, setHistoryData] = useState<VolunteerHistoryItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch volunteer history data when component mounts
+  useEffect(() => {
+    const fetchVolunteerHistory = async () => {
+      try {
+        const response = await fetch('/api/volunteerHistory');
+        const result: ApiResponse = await response.json();
+        
+        if (result.success) {
+          setHistoryData(result.data);
+        } else {
+          setError(result.message || 'Failed to fetch volunteer history');
+        }
+      } catch (err) {
+        console.error('Error fetching volunteer history:', err);
+        setError('Failed to fetch volunteer history.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVolunteerHistory();
+  }, []);
+
   return (
     <div>
       {/* Navigation Bar */}
@@ -62,34 +111,55 @@ const VolunteerHistory: React.FC = () => {
       <div className="fixed inset-0 flex items-center justify-center bg-[#808977]">
         <div className="bg-[#f3e6d5] p-10 rounded-lg shadow-lg w-[80%] text-[#2d2a26]">
           <h1 className="text-center text-3xl font-bold mb-6 text-[#2d2a26]">Volunteer History</h1>
-          <table className="w-full border-collapse border border-black">
-            <thead>
-              <tr className="bg-[#e8c5b7] border border-black">
-                <th className="border border-black p-2">Volunteer Name</th>
-                <th className="border border-black p-2">Participation Status</th>
-                <th className="border border-black p-2">Event Name</th>
-                <th className="border border-black p-2">Event Description</th>
-                <th className="border border-black p-2">Location</th>
-                <th className="border border-black p-2">Required Skills</th>
-                <th className="border border-black p-2">Urgency</th>
-                <th className="border border-black p-2">Event Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[...Array(4)].map((_, index) => (
-                <tr key={index} className="bg-[#e8c5b7] border border-black">
-                  <td className="border border-black p-2"></td>
-                  <td className="border border-black p-2"></td>
-                  <td className="border border-black p-2"></td>
-                  <td className="border border-black p-2"></td>
-                  <td className="border border-black p-2"></td>
-                  <td className="border border-black p-2"></td>
-                  <td className="border border-black p-2"></td>
-                  <td className="border border-black p-2"></td>
+          
+          {loading ? (
+            <div className="text-center py-8">
+              <p>Loading volunteer history...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-8 text-red-600">
+              <p>{error}</p>
+            </div>
+          ) : (
+            <table className="w-full border-collapse border border-black">
+              <thead>
+                <tr className="bg-[#e8c5b7] border border-black">
+                  <th className="border border-black p-2">Volunteer Name</th>
+                  <th className="border border-black p-2">Participation Status</th>
+                  <th className="border border-black p-2">Event Name</th>
+                  <th className="border border-black p-2">Event Description</th>
+                  <th className="border border-black p-2">Location</th>
+                  <th className="border border-black p-2">Required Skills</th>
+                  <th className="border border-black p-2">Urgency</th>
+                  <th className="border border-black p-2">Event Date</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {historyData.length > 0 ? (
+                  historyData.map((item) => (
+                    <tr key={item.id} className="bg-[#e8c5b7] border border-black">
+                      <td className="border border-black p-2">{item.volunteerName}</td>
+                      <td className="border border-black p-2">{item.participationStatus}</td>
+                      <td className="border border-black p-2">{item.eventName}</td>
+                      <td className="border border-black p-2">{item.eventDescription}</td>
+                      <td className="border border-black p-2">{item.location}</td>
+                      <td className="border border-black p-2">
+                        {item.requiredSkills.join(", ")}
+                      </td>
+                      <td className="border border-black p-2">{item.urgency}</td>
+                      <td className="border border-black p-2">{item.eventDate}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={8} className="border border-black p-2 text-center">
+                      No volunteer history found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>
