@@ -1,12 +1,14 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import Login from "../src/pages/login"; // Adjust the import to match your file structure
 
+//mock simulation for testing
 jest.mock("next/router", () => ({
   useRouter: jest.fn().mockImplementation(() => ({
     push: jest.fn(),
   })),
 }));
 
+//ensure page renders properly
 describe("Login Component", () => {
   it("should render the login form correctly", () => {
     render(<Login />);
@@ -17,6 +19,7 @@ describe("Login Component", () => {
     expect(screen.getByRole("button", { name: /login/i })).toBeInTheDocument();
   });
 
+  //verify user input handling
   it("should handle user input correctly", () => {
     render(<Login />);
 
@@ -32,6 +35,7 @@ describe("Login Component", () => {
     expect(passwordInput).toHaveValue("password123");
   });
 
+  //verify error message if login failed
   it("should display error message if login fails", async () => {
     // Mocking the fetch request to simulate a failed login
     global.fetch = jest.fn().mockResolvedValue({
@@ -55,6 +59,7 @@ describe("Login Component", () => {
     });
   });
 
+  // verify successful login messages display
   it("should display success message and redirect upon successful login", async () => {
     // Mocking the fetch request to simulate a successful login
     global.fetch = jest.fn().mockResolvedValue({
