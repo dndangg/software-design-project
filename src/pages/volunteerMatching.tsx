@@ -62,6 +62,7 @@ const VolunteerMatching: React.FC = () => {
           ]);
         }
       } catch (err) {
+        console.error("Error fetching volunteers", err);
         console.log('Using hardcoded data for development');
         
         setVolunteers([
@@ -172,6 +173,7 @@ const VolunteerMatching: React.FC = () => {
         }
       }
     } catch (err) {
+      console.error("Error fetching volunteers", err);
       console.log('Using hardcoded data for development');
       
       const volunteer = volunteers.find(v => v.id === volunteerId) || null;
@@ -264,6 +266,7 @@ const VolunteerMatching: React.FC = () => {
         setSuccess(`Successfully assigned volunteer to ${eventName}`);
       }
     } catch (err) {
+      console.error("Error assigning volunteer to event", err);
       console.log('Simulating successful assignment for development');
       // For development, just show success
       const eventName = matchedEvents.find(e => e.id === eventId)?.name || 'event';
