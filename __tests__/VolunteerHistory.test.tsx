@@ -1,12 +1,31 @@
+// __tests__/VolunteerHistory.test.tsx
 import { render, screen, waitFor } from "@testing-library/react";
 import VolunteerHistory from "../src/pages/volunteerHistory";
-import { rest } from 'msw;
-import { setupServer } from "msw/node";
+import fetchMock from "jest-fetch-mock";
 
-// Mock API server
-const server = setupServer(
-  rest.get("/api/volunteerHistory", (req, res, ctx) => {
-    return res(ctx.json({
+// Mock the fetch API
+fetchMock.enableMocks();
+
+describe("VolunteerHistory", () => {
+  beforeEach(() => {
+    fetchMock.resetMocks();
+  });
+
+  test("renders loading state initially", () => {
+    render(<VolunteerHistory />);
+    expect(screen.getByText(/Loading volunteer history.../i)).toBeInTheDocument();
+  });
+
+  test("displays error message if API request fails", async () => {
+    fetchMock.mockRejectOnce(new Error("Failed to fetch volunteer history"));
+
+    render(<VolunteerHistory />);
+
+    await waitFor(() => expect(screen.getByText(/Failed to fetch volunteer history./i)).toBeInTheDocument());
+  });
+
+  test("displays volunteer history table when data is successfully fetched", async () => {
+    const mockData = {
       success: true,
       data: [
         {
@@ -14,41 +33,29 @@ const server = setupServer(
           volunteerName: "John Doe",
           participationStatus: "Completed",
           eventName: "Community Cleanup",
-          eventDescription: "Cleaning local parks",
-          location: "Houston, TX",
-          requiredSkills: ["Teamwork", "Physical Stamina"],
-          urgency: "Medium",
-          eventDate: "2024-03-15",
+          eventDescription: "Cleaning up the local park",
+          location: "Local Park",
+          requiredSkills: ["Leadership", "Organization"],
+          urgency: "High",
+          eventDate: "2025-04-01",
         },
       ],
-    }));
-  })
-);
+    };
+    fetchMock.mockResponseOnce(JSON.stringify(mockData));
 
-// Enable API mocking before tests and clean up after
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+    render(<VolunteerHistory />);
 
-test("renders loading state initially", () => {
-  render(<VolunteerHistory />);
-  expect(screen.getByText(/loading volunteer history/i)).toBeInTheDocument();
-});
+    await waitFor(() => expect(screen.getByText(/Community Cleanup/i)).toBeInTheDocument());
+    expect(screen.getByText(/John Doe/i)).toBeInTheDocument();
+    expect(screen.getByText(/Completed/i)).toBeInTheDocument();
+  });
 
-test("renders volunteer history after fetching data", async () => {
-  render(<VolunteerHistory />);
-  await waitFor(() => screen.getByText("John Doe"));
-  expect(screen.getByText("Community Cleanup")).toBeInTheDocument();
-  expect(screen.getByText("Houston, TX")).toBeInTheDocument();
-});
+  test("displays no volunteer history found message if no data is returned", async () => {
+    const mockData = { success: true, data: [] };
+    fetchMock.mockResponseOnce(JSON.stringify(mockData));
 
-test("handles API error correctly", async () => {
-  server.use(
-    rest.get("/api/volunteerHistory", (req, res, ctx) => {
-      return res(ctx.json({ success: false, message: "Error fetching data" }));
-    })
-  );
-  render(<VolunteerHistory />);
-  await waitFor(() => screen.getByText("Error fetching data"));
-  expect(screen.getByText("Error fetching data")).toBeInTheDocument();
+    render(<VolunteerHistory />);
+
+    await waitFor(() => expect(screen.getByText(/No volunteer history found./i)).toBeInTheDocument());
+  });
 });

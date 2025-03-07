@@ -13,6 +13,7 @@ describe('VolunteerMatching', () => {
     expect(screen.getByText('Match!')).toBeInTheDocument();
   });
 
+  //verify inputs work properly
   test('input updates volunteer name state correctly', () => {
     render(<VolunteerMatching />);
 
@@ -23,9 +24,11 @@ describe('VolunteerMatching', () => {
     expect(volunteerNameInput).toHaveValue('John Doe');
   });
 
+  // verify match functionality
   test('matched event state is updated when match button is clicked', () => {
     render(<VolunteerMatching />);
 
+    // verify all elements appear on screen
     const volunteerNameInput = screen.getByLabelText('Volunteer Name');
     const matchButton = screen.getByText('Match!');
     const matchedEventInput = screen.getByLabelText('Matched Event');
@@ -43,6 +46,7 @@ describe('VolunteerMatching', () => {
     expect(matchedEventInput).toHaveValue('Blood Drive');
   });
 
+  // verify error handling if empty required fields
   test('does not update matched event if no volunteer name is entered', () => {
     render(<VolunteerMatching />);
 

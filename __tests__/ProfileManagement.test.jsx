@@ -11,10 +11,12 @@ global.fetch = jest.fn(() =>
 );
 
 describe("ProfileManagement Component", () => {
+  //make sure previous test results don't interefere with new tests
   beforeEach(() => {
     fetch.mockClear();
   });
 
+  // check that form renders properly
   it("should render the profile management form", () => {
     render(<ProfileManagement />);
 
@@ -28,6 +30,7 @@ describe("ProfileManagement Component", () => {
     expect(screen.getByLabelText(/Select Dates \*/)).toBeInTheDocument();
   });
 
+  //validate form data for submission
   it("should handle form submission with valid data", async () => {
     render(<ProfileManagement />);
 
@@ -67,6 +70,7 @@ describe("ProfileManagement Component", () => {
     );
   });
 
+  //ensure error message if empty form is submitted
   it("should display validation errors if required fields are empty", async () => {
     render(<ProfileManagement />);
 
@@ -85,6 +89,7 @@ describe("ProfileManagement Component", () => {
     });
   });
 
+  // Alert error if failed update
   it("should show an alert message when profile update fails", async () => {
     // Simulate API failure
     fetch.mockImplementationOnce(() =>
