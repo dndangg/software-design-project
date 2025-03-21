@@ -45,11 +45,8 @@ export default function ProfileManagement() {
       // Call the API to update the profile
       const response = await fetch("/api/profile", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "hardcoded-token", // Simulate authentication
-        },
-        body: JSON.stringify(formData),
+        headers: {"Content-Type": "application/json",},
+        body: JSON.stringify(formData), //sends profile form data to API in request
       });
 
       const data = await response.json();
