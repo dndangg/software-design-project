@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import Login from "../src/pages/login"; // Adjust the import to match your file structure
+import Login from "../src/pages/login"; 
 
 //mock simulation for testing
 jest.mock("next/router", () => ({

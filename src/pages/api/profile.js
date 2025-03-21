@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     }
 
     // Query the database for the user with the provided name
-    const { profile: existingProfile, error } = await supabase
+    const { data: existingProfile, error } = await supabase
       .from("userprofile")
       .select("*")
       .eq("full_name", fullName)
