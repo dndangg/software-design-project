@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1741389890973" clover="3.2.0">
-  <project timestamp="1741389890974" name="All files">
+<coverage generated="1742504285461" clover="3.2.0">
+  <project timestamp="1742504285461" name="All files">
     <metrics statements="1178" coveredstatements="867" conditionals="36" coveredconditionals="22" methods="18" coveredmethods="9" elements="1232" coveredelements="898" complexity="0" loc="1178" ncloc="1178" packages="1" files="5" classes="5"/>
     <file name="eventManagement.js" path="C:\Users\alima\Downloads\Software Desig\software-design-project\src\pages\eventManagement.js">
       <metrics statements="122" coveredstatements="61" conditionals="2" coveredconditionals="1" methods="3" coveredmethods="1"/>
