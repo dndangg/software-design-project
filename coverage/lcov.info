@@ -1,5 +1,5 @@
 TN:
-SF:src\pages\eventManagement.js
+SF:src/pages/eventManagement.js
 FN:4,EventManagement
 FN:20,handleChange
 FN:28,handleSubmit
@@ -138,7 +138,7 @@ BRF:2
 BRH:1
 end_of_record
 TN:
-SF:src\pages\login.tsx
+SF:src/pages/login.tsx
 FN:4,Login
 FN:16,handleLogin
 FN:120,onChange
@@ -313,7 +313,7 @@ BRF:1
 BRH:1
 end_of_record
 TN:
-SF:src\pages\profileManagement.js
+SF:src/pages/profileManagement.js
 FN:4,ProfileManagement
 FN:18,handleChange
 FN:26,handleSubmit
@@ -518,7 +518,7 @@ BRF:16
 BRH:6
 end_of_record
 TN:
-SF:src\pages\volunteerHistory.tsx
+SF:src/pages/volunteerHistory.tsx
 FN:25,VolunteerHistory
 FN:33,fetchVolunteerHistory
 FNF:2
@@ -711,7 +711,7 @@ BRF:11
 BRH:10
 end_of_record
 TN:
-SF:src\pages\volunteerMatching.tsx
+SF:src/pages/volunteerMatching.tsx
 FN:25,VolunteerMatching
 FN:39,fetchVolunteers
 FN:89,handleVolunteerChange

@@ -13,9 +13,34 @@ export default function RegistrationForm() {  //
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Registration Successful!");
+    
+    try {
+      // POST request to the registration API route
+      const response = await fetch("/api/authentication/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      // Parse JSON response
+      const data = await response.json();
+
+      // Check if the response indicates an error
+      if (!response.ok) {
+        throw new Error(data.error || "Registration failed!");
+      }
+
+      // On successful registration, alert success message
+      alert(data.message);
+
+      // Optionally, redirect to the login page after registration
+      window.location.href = "/login";
+    } catch (error) {
+      // Display error message
+      alert(error.message);
+    }
   };
 
   return (
@@ -110,6 +135,94 @@ export default function RegistrationForm() {  //
             required
           />
 
+          <label htmlFor="full_name">Full Name</label>
+          <input
+            type="full_name"
+            id="full_name"
+            name="full_name"
+            placeholder="Enter your full name"
+            value={formData.full_name}
+            onChange={handleChange}
+            required
+          />
+
+          <label htmlFor="address">Address</label>
+          <input
+            type="address"
+            id="address"
+            name="address"
+            placeholder="Enter address"
+            value={formData.address}
+            onChange={handleChange}
+            required
+          />
+
+          <label htmlFor="city">City</label>
+          <input
+            type="city"
+            id="city"
+            name="city"
+            placeholder="Enter city"
+            value={formData.city}
+            onChange={handleChange}
+            required
+          />
+
+          <label htmlFor="state">State</label>
+          <input
+            type="stat"
+            id="state"
+            name="state"
+            placeholder="Enter state"
+            value={formData.state}
+            onChange={handleChange}
+            required
+          />
+
+          <label htmlFor="zipcode">Zip Code</label>
+          <input
+            type="zipcode"
+            id="zipcode"
+            name="zipcode"
+            placeholder="Enter Zip Code"
+            value={formData.zipcode}
+            onChange={handleChange}
+            required
+          />
+
+          <label htmlFor="skills">Skills</label>
+          <input
+            type="skills"
+            id="skills"
+            name="skills"
+            placeholder="Enter skills"
+            value={formData.skills}
+            onChange={handleChange}
+            required
+          />
+
+          <label htmlFor="preferences">Preferences</label>
+          <input
+            type="preferences"
+            id="preferences"
+            name="preferences"
+            placeholder="Enter preferences"
+            value={formData.preferences}
+            onChange={handleChange}
+            required
+          />
+
+          <label htmlFor="availability">Availability</label>
+          <input
+            type="availability"
+            id="availability"
+            name="availability"
+            placeholder="Enter availability"
+            value={formData.availability}
+            onChange={handleChange}
+            required
+          />
+          
           <button type="submit" className="register-button">Register</button>
         </form>
 
