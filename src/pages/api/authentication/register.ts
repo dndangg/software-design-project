@@ -28,7 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Use the generated user ID to insert into UserProfile
   const userId = credentials.id;
-  const { data: profile, error: profileError } = await supabase
+  const { error: profileError } = await supabase
     .from("UserProfile")
     .insert([{
       id: userId,
