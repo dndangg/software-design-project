@@ -19,7 +19,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Insert into UserCredentials
   const { data: credentials, error: credError } = await supabase
-    .from("UserCredentials")
+    .from("usercredentials")
     .insert([{ email, password: hashedPassword }])
     .select()
     .single();
@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // Use the generated user ID to insert into UserProfile
   const userId = credentials.id;
   const { error: profileError } = await supabase
-    .from("UserProfile")
+    .from("userprofile")
     .insert([{
       id: userId,
       full_name,
