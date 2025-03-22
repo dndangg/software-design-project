@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   switch (req.method) {
     case "GET":
       const { data: events, error: fetchError } = await supabase
-        .from("eventdetails") // ✅ updated
+        .from("eventdetails") 
         .select("*");
 
       if (fetchError) {
@@ -42,7 +42,7 @@ export default async function handler(req, res) {
       }
 
       const { data: newEvent, error: insertError } = await supabase
-        .from("eventdetails") // ✅ updated
+        .from("eventdetails") 
         .insert([
           {
             event_name: eventName,
