@@ -17,6 +17,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/registration.tsx", "src/pages/eventManagement.tsx", "src/pages/profileManagement.js", "src/pages/profileManagement.js", "src/pages/profileManagement.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/registration.tsx", "src/pages/eventManagement.tsx", "src/pages/profileManagement.js", "src/pages/profileManagement.js", "src/pages/profileManagement.jsx", "src/lib/supabaseClient.js", "src/lib/supabaseClient.js", "src/lib/supabaseClient.js"],
   "exclude": ["node_modules"]
 }
