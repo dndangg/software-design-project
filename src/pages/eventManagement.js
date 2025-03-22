@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function EventManagement() {
   const [formData, setFormData] = useState({
     eventName: "",
-    eventDescription: "",
+    description: "", 
     location: "",
     city: "",
     state: "",
@@ -13,7 +13,7 @@ export default function EventManagement() {
     urgency: "",
     eventDate: "",
   });
-  
+
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -32,12 +32,12 @@ export default function EventManagement() {
     const newErrors = {};
     if (!formData.eventName) newErrors.eventName = "Event Name is required";
     if (formData.eventName.length > 100) newErrors.eventName = "Event Name cannot exceed 100 characters";
-    if (!formData.eventDescription) newErrors.eventDescription = "Description is required";
+    if (!formData.description) newErrors.description = "Description is required"; 
     if (!formData.location) newErrors.location = "Location is required";
     if (!formData.requiredSkills) newErrors.requiredSkills = "Required skills are needed";
     if (!formData.urgency) newErrors.urgency = "Urgency level is required";
     if (!formData.eventDate) newErrors.eventDate = "Event date is required";
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       setLoading(false);
@@ -50,19 +50,19 @@ export default function EventManagement() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "hardcoded-token", // Simulated authentication
+          Authorization: "hardcoded-token",
         },
         body: JSON.stringify(formData),
       });
-      
+
       const data = await response.json();
       console.log("API Response:", data);
-      
+
       if (response.ok) {
         alert("Event created successfully!");
         setFormData({
           eventName: "",
-          eventDescription: "",
+          description: "", 
           location: "",
           city: "",
           state: "",
@@ -93,18 +93,26 @@ export default function EventManagement() {
           </div>
         </div>
       </nav>
-      <div className="bg-[#f3e6d5] p-8 rounded-lg shadow-md w-[500px]">
+
+      <div className="bg-[#f3e6d5] p-8 rounded-lg shadow-md w-[500px] mt-24">
         <h1 className="text-2xl font-bold text-center mb-4 text-[#2d2a26]">Event Management</h1>
         <form onSubmit={handleSubmit}>
           <label>Event Name *</label>
           <input type="text" name="eventName" value={formData.eventName} onChange={handleChange} maxLength="100" required />
           {errors.eventName && <p className="text-red-500 text-sm">{errors.eventName}</p>}
+
           <label>Event Description *</label>
-          <textarea name="eventDescription" value={formData.eventDescription} onChange={handleChange} required></textarea>
+          <textarea name="description" value={formData.description} onChange={handleChange} required></textarea>
+          {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
+
           <label>Location *</label>
           <input type="text" name="location" value={formData.location} onChange={handleChange} required />
+          {errors.location && <p className="text-red-500 text-sm">{errors.location}</p>}
+
           <label>Required Skills *</label>
           <textarea name="requiredSkills" value={formData.requiredSkills} onChange={handleChange} required></textarea>
+          {errors.requiredSkills && <p className="text-red-500 text-sm">{errors.requiredSkills}</p>}
+
           <label>Urgency *</label>
           <select name="urgency" value={formData.urgency} onChange={handleChange} required>
             <option value="">Select</option>
@@ -112,9 +120,15 @@ export default function EventManagement() {
             <option value="medium">Medium</option>
             <option value="high">High</option>
           </select>
+          {errors.urgency && <p className="text-red-500 text-sm">{errors.urgency}</p>}
+
           <label>Event Date *</label>
           <input type="date" name="eventDate" value={formData.eventDate} onChange={handleChange} required />
-          <button type="submit" disabled={loading}>{loading ? "Saving..." : "Create Event"}</button>
+          {errors.eventDate && <p className="text-red-500 text-sm">{errors.eventDate}</p>}
+
+          <button type="submit" disabled={loading} className="mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition">
+            {loading ? "Saving..." : "Create Event"}
+          </button>
         </form>
       </div>
     </div>
