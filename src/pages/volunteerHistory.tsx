@@ -4,7 +4,7 @@ import Link from "next/link";
 
 // Define TypeScript interface for volunteer history data
 interface VolunteerHistoryItem {
-  id: number;
+  id: string; // Changed from number to string to match UUID
   volunteerName: string;
   participationStatus: string;
   eventName: string;
@@ -33,7 +33,16 @@ const VolunteerHistory: React.FC = () => {
     const fetchVolunteerHistory = async () => {
       try {
         const response = await fetch('/api/volunteerHistory');
+        
+        if (!response.ok) {
+          console.error('Response not OK:', response.status, response.statusText);
+          setError(`HTTP error: ${response.status}`);
+          setLoading(false);
+          return;
+        }
+        
         const result: ApiResponse = await response.json();
+        console.log('API Response:', result); // Debug: Log the response
         
         if (result.success) {
           setHistoryData(result.data);
@@ -42,7 +51,7 @@ const VolunteerHistory: React.FC = () => {
         }
       } catch (err) {
         console.error('Error fetching volunteer history:', err);
-        setError('Failed to fetch volunteer history.');
+        setError('Error fetching volunteer history: ' + (err instanceof Error ? err.message : String(err)));
       } finally {
         setLoading(false);
       }
@@ -144,7 +153,9 @@ const VolunteerHistory: React.FC = () => {
                       <td className="border border-black p-2">{item.eventDescription}</td>
                       <td className="border border-black p-2">{item.location}</td>
                       <td className="border border-black p-2">
-                        {item.requiredSkills.join(", ")}
+                        {Array.isArray(item.requiredSkills) 
+                          ? item.requiredSkills.join(", ")
+                          : item.requiredSkills} {/* Added safety check */}
                       </td>
                       <td className="border border-black p-2">{item.urgency}</td>
                       <td className="border border-black p-2">{item.eventDate}</td>
