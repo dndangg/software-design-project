@@ -1,5 +1,6 @@
 
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { supabase } from "../../lib/supabaseClient"; //**imported supabase client file located in lib folder
 
 // Define type for volunteer history item
 interface VolunteerHistoryItem {
@@ -28,6 +29,7 @@ interface ApiErrorResponse {
 type ApiResponse = ApiSuccessResponse | ApiErrorResponse;
 
 // Hard code data for volunteer history
+// **delete hardcoded data
 const volunteerHistoryData: VolunteerHistoryItem[] = [
   {
     id: 1,
@@ -86,6 +88,7 @@ export default function handler(
   res: NextApiResponse<ApiResponse>
 ) {
   if (req.method === 'GET') {
+    //**access the volunteer over here, maybe using the name as an identifier? */
     try {
       // Return the volunteer history data
       res.status(200).json({
