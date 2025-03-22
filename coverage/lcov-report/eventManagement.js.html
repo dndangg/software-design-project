@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">55.14% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>61/122</span>
+                <span class='fraction'>75/136</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">55.14% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>61/122</span>
+                <span class='fraction'>75/136</span>
             </div>
         
             
@@ -184,7 +184,22 @@
 <a name='L119'></a><a href='#L119'>119</a>
 <a name='L120'></a><a href='#L120'>120</a>
 <a name='L121'></a><a href='#L121'>121</a>
-<a name='L122'></a><a href='#L122'>122</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -305,13 +320,28 @@
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState } from "react";
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { useState } from "react";
 import Link from "next/link";
 &nbsp;
 export default function EventManagement() {
   const [formData, setFormData] = useState({
     eventName: "",
-    eventDescription: "",
+    description: "", 
     location: "",
     city: "",
     state: "",
@@ -320,7 +350,7 @@ export default function EventManagement() {
     urgency: "",
     eventDate: "",
   });
-  
+&nbsp;
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 &nbsp;
@@ -339,12 +369,12 @@ export default function EventManagement() {
 <span class="cstat-no" title="statement not covered" >    const newErrors = {};</span>
 <span class="cstat-no" title="statement not covered" >    if (!formData.eventName) newErrors.eventName = "Event Name is required";</span>
 <span class="cstat-no" title="statement not covered" >    if (formData.eventName.length &gt; 100) newErrors.eventName = "Event Name cannot exceed 100 characters";</span>
-<span class="cstat-no" title="statement not covered" >    if (!formData.eventDescription) newErrors.eventDescription = "Description is required";</span>
+<span class="cstat-no" title="statement not covered" >    if (!formData.description) newErrors.description = "Description is required"; </span>
 <span class="cstat-no" title="statement not covered" >    if (!formData.location) newErrors.location = "Location is required";</span>
 <span class="cstat-no" title="statement not covered" >    if (!formData.requiredSkills) newErrors.requiredSkills = "Required skills are needed";</span>
 <span class="cstat-no" title="statement not covered" >    if (!formData.urgency) newErrors.urgency = "Urgency level is required";</span>
 <span class="cstat-no" title="statement not covered" >    if (!formData.eventDate) newErrors.eventDate = "Event date is required";</span>
-<span class="cstat-no" title="statement not covered" >    </span>
+<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >    if (Object.keys(newErrors).length &gt; 0) {</span>
 <span class="cstat-no" title="statement not covered" >      setErrors(newErrors);</span>
 <span class="cstat-no" title="statement not covered" >      setLoading(false);</span>
@@ -357,19 +387,19 @@ export default function EventManagement() {
 <span class="cstat-no" title="statement not covered" >        method: "POST",</span>
 <span class="cstat-no" title="statement not covered" >        headers: {</span>
 <span class="cstat-no" title="statement not covered" >          "Content-Type": "application/json",</span>
-<span class="cstat-no" title="statement not covered" >          Authorization: "hardcoded-token", // Simulated authentication</span>
+<span class="cstat-no" title="statement not covered" >          Authorization: "hardcoded-token",</span>
 <span class="cstat-no" title="statement not covered" >        },</span>
 <span class="cstat-no" title="statement not covered" >        body: JSON.stringify(formData),</span>
 <span class="cstat-no" title="statement not covered" >      });</span>
-<span class="cstat-no" title="statement not covered" >      </span>
+<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >      const data = await response.json();</span>
 <span class="cstat-no" title="statement not covered" >      console.log("API Response:", data);</span>
-<span class="cstat-no" title="statement not covered" >      </span>
+<span class="cstat-no" title="statement not covered" ></span>
 <span class="cstat-no" title="statement not covered" >      if (response.ok) {</span>
 <span class="cstat-no" title="statement not covered" >        alert("Event created successfully!");</span>
 <span class="cstat-no" title="statement not covered" >        setFormData({</span>
 <span class="cstat-no" title="statement not covered" >          eventName: "",</span>
-<span class="cstat-no" title="statement not covered" >          eventDescription: "",</span>
+<span class="cstat-no" title="statement not covered" >          description: "", </span>
 <span class="cstat-no" title="statement not covered" >          location: "",</span>
 <span class="cstat-no" title="statement not covered" >          city: "",</span>
 <span class="cstat-no" title="statement not covered" >          state: "",</span>
@@ -400,18 +430,26 @@ export default function EventManagement() {
           &lt;/div&gt;
         &lt;/div&gt;
       &lt;/nav&gt;
-      &lt;div className="bg-[#f3e6d5] p-8 rounded-lg shadow-md w-[500px]"&gt;
+&nbsp;
+      &lt;div className="bg-[#f3e6d5] p-8 rounded-lg shadow-md w-[500px] mt-24"&gt;
         &lt;h1 className="text-2xl font-bold text-center mb-4 text-[#2d2a26]"&gt;Event Management&lt;/h1&gt;
         &lt;form onSubmit={handleSubmit}&gt;
           &lt;label&gt;Event Name *&lt;/label&gt;
           &lt;input type="text" name="eventName" value={formData.eventName} onChange={handleChange} maxLength="100" required /&gt;
           {errors.eventName &amp;&amp; &lt;p className="text-red-500 text-sm"&gt;{errors.eventName}&lt;/p&gt;}
+&nbsp;
           &lt;label&gt;Event Description *&lt;/label&gt;
-          &lt;textarea name="eventDescription" value={formData.eventDescription} onChange={handleChange} required&gt;&lt;/textarea&gt;
+          &lt;textarea name="description" value={formData.description} onChange={handleChange} required&gt;&lt;/textarea&gt;
+          {errors.description &amp;&amp; &lt;p className="text-red-500 text-sm"&gt;{errors.description}&lt;/p&gt;}
+&nbsp;
           &lt;label&gt;Location *&lt;/label&gt;
           &lt;input type="text" name="location" value={formData.location} onChange={handleChange} required /&gt;
+          {errors.location &amp;&amp; &lt;p className="text-red-500 text-sm"&gt;{errors.location}&lt;/p&gt;}
+&nbsp;
           &lt;label&gt;Required Skills *&lt;/label&gt;
           &lt;textarea name="requiredSkills" value={formData.requiredSkills} onChange={handleChange} required&gt;&lt;/textarea&gt;
+          {errors.requiredSkills &amp;&amp; &lt;p className="text-red-500 text-sm"&gt;{errors.requiredSkills}&lt;/p&gt;}
+&nbsp;
           &lt;label&gt;Urgency *&lt;/label&gt;
           &lt;select name="urgency" value={formData.urgency} onChange={handleChange} required&gt;
             &lt;option value=""&gt;Select&lt;/option&gt;
@@ -419,21 +457,28 @@ export default function EventManagement() {
             &lt;option value="medium"&gt;Medium&lt;/option&gt;
             &lt;option value="high"&gt;High&lt;/option&gt;
           &lt;/select&gt;
+          {errors.urgency &amp;&amp; &lt;p className="text-red-500 text-sm"&gt;{errors.urgency}&lt;/p&gt;}
+&nbsp;
           &lt;label&gt;Event Date *&lt;/label&gt;
           &lt;input type="date" name="eventDate" value={formData.eventDate} onChange={handleChange} required /&gt;
-          &lt;button type="submit" disabled={loading}&gt;{<span class="branch-0 cbranch-no" title="branch not covered" >loading ? "Saving..." : "</span>Create Event"}&lt;/button&gt;
+          {errors.eventDate &amp;&amp; &lt;p className="text-red-500 text-sm"&gt;{errors.eventDate}&lt;/p&gt;}
+&nbsp;
+          &lt;button type="submit" disabled={loading} className="mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition"&gt;
+            {<span class="branch-0 cbranch-no" title="branch not covered" >loading ? "Saving..." : "</span>Create Event"}
+          &lt;/button&gt;
         &lt;/form&gt;
       &lt;/div&gt;
     &lt;/div&gt;
   );
-}</pre></td></tr></table></pre>
+}
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-03-21T23:29:15.277Z
+                at 2025-03-22T03:13:25.039Z
             </div>
         <script src="prettify.js"></script>
         <script>
