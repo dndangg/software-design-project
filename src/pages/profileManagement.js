@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 
 export default function ProfileManagement() {
+  //set up basic form fields
   const [formData, setFormData] = useState({
     fullName: "",
     skills: "",
@@ -24,7 +25,7 @@ export default function ProfileManagement() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); //make sure to clear form in between submissions
 
     // Validate form fields
     const newErrors = {};
@@ -65,6 +66,7 @@ export default function ProfileManagement() {
 
   //Body of User Profile Management Page
   return (
+    //navigation bar
     <div className="profile-container">
       <nav className="bg-gray-800 text-white px-4 py-3 fixed top-0 left-0 right-0 z-10 shadow-lg">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
