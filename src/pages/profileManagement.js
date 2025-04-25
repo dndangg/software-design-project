@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 
 export default function ProfileManagement() {
@@ -23,6 +23,22 @@ export default function ProfileManagement() {
       setErrors({ ...errors, [name]: "" });
     }
   };
+
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await fetch("/api/notifications");
+        const data = await response.json();
+        setNotifications(data.notifications || []);
+      } catch (error) {
+        console.error("Failed to fetch notifications:", error);
+      }
+    };
+    fetchNotifications();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault(); //make sure to clear form in between submissions
@@ -68,18 +84,46 @@ export default function ProfileManagement() {
   return (
     //navigation bar
     <div className="profile-container">
-      <nav className="bg-gray-800 text-white px-4 py-3 fixed top-0 left-0 right-0 z-10 shadow-lg">
-        <div className="flex items-center justify-between max-w-6xl mx-auto">
-          <Link href="/" className="text-xl font-bold">
-            Home
-          </Link>
-          <div className="flex items-center space-x-4">
-            <Link href="/profileManagement" className="hover:text-gray-400">Profile</Link>
-            <Link href="/signout" className="hover:text-gray-400">Sign Out</Link>
-            <Link href="/eventManagement" className="hover:text-gray-400">Event Management</Link>
+<nav className="bg-gray-800 text-white px-4 py-3 fixed top-0 left-0 right-0 z-10 shadow-lg">
+  <div className="flex items-center justify-between max-w-6xl mx-auto">
+    <Link href="/" className="text-xl font-bold">Home</Link>
+    <div className="flex items-center space-x-4">
+      <Link href="/login" className="hover:text-gray-400">Login</Link>
+      <Link href="/signout" className="hover:text-gray-400">Sign Out</Link>
+      <Link href="/registration" className="hover:text-gray-400">Registration</Link>
+      <Link href="/profileManagement" className="hover:text-gray-400">Profile Management</Link>
+      <Link href="/eventManagement" className="hover:text-gray-400">Event Management</Link>
+      <Link href="/volunteerMatching" className="hover:text-gray-400">Volunteer Matching</Link>
+      <Link href="/volunteerHistory" className="hover:text-gray-400">Volunteer History</Link>
+      <div className="relative z-50">
+        <button
+          className="relative hover:text-gray-400"
+          onClick={() => setShowNotifications(!showNotifications)}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor" className="w-6 h-6">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+              d="M15 17h5l-1.405-1.405A2.003 2.003 0 0118 14V9a6 6 0 10-12 0v5a2.003 2.003 0 01-1.595 1.595L4 17h5m6 0v1a3 3 0 11-6 0v-1"/>
+          </svg>
+          {notifications.length > 0 && (
+            <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>
+          )}
+        </button>
+        {showNotifications && (
+          <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg z-50">
+            <ul className="p-2 text-black">
+              {notifications.map((notification) => (
+                <li key={notification.id} className="py-1 border-b last:border-b-0">
+                  {notification.message}
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
-      </nav>
+        )}
+      </div>
+    </div>
+  </div>
+</nav>
 
       <div className="profile-box">
         <h1 className="profile-title">User Profile Management</h1>
