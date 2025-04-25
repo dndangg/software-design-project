@@ -53,7 +53,7 @@ export default async function handler(
       }
       
       // Basic Supabase connection test - changed to avoid aggregate function
-      const { data: testConn, error: testConnError } = await supabase
+      const { error: testConnError } = await supabase // removed unused testConn
         .from('volunteerhistory')
         .select('id')
         .limit(1);
@@ -147,7 +147,7 @@ export default async function handler(
           } catch {
             // If not valid JSON, treat as comma-separated string
             skillsArray = typeof event.required_skills === 'string' 
-              ? event.required_skills.split(',').map(skill => skill.trim())
+              ? event.required_skills.split(',').map((skill: string) => skill.trim()) // explicitly make skill a string
               : [String(event.required_skills)];
           }
         }

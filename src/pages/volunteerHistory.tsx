@@ -143,7 +143,7 @@ const VolunteerHistory: React.FC = () => {
       `"${item.eventName.replace(/"/g, '""')}"`,
       `"${item.eventDescription.replace(/"/g, '""')}"`,
       `"${item.location.replace(/"/g, '""')}"`,
-      `"${Array.isArray(item.requiredSkills) ? item.requiredSkills.join(", ").replace(/"/g, '""') : item.requiredSkills.replace(/"/g, '""')}"`,
+      `"${Array.isArray(item.requiredSkills) ? item.requiredSkills.join(", ").replace(/"/g, '""') : (item.requiredSkills as string).replace(/"/g, '""')}"`,
       `"${item.urgency.replace(/"/g, '""')}"`,
       `"${item.eventDate.replace(/"/g, '""')}"`
     ].join(","));
