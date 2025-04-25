@@ -22,12 +22,14 @@ interface VolunteerHistoryItem {
   eventDate: string;
 }
 
+/* Unused variable
 // Define interface for API response
 interface ApiResponse {
   success: boolean;
   data: VolunteerHistoryItem[];
   message?: string;
 }
+*/
 
 const VolunteerHistory: React.FC = () => {
   // State to store volunteer history data
@@ -217,7 +219,7 @@ const VolunteerHistory: React.FC = () => {
       `"${item.eventName.replace(/"/g, '""')}"`,
       `"${item.eventDescription.replace(/"/g, '""')}"`,
       `"${item.location.replace(/"/g, '""')}"`,
-      `"${Array.isArray(item.requiredSkills) ? item.requiredSkills.join(", ").replace(/"/g, '""') : item.requiredSkills.replace(/"/g, '""')}"`,
+      `"${Array.isArray(item.requiredSkills) ? item.requiredSkills.join(", ").replace(/"/g, '""') : (item.requiredSkills as string).replace(/"/g, '""')}"`,
       `"${item.urgency.replace(/"/g, '""')}"`,
       `"${item.eventDate.replace(/"/g, '""')}"`
     ].join(","));
