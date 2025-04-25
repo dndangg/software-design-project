@@ -1,506 +1,337 @@
 // pages/volunteerMatching.tsx
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { createClient } from "@supabase/supabase-js";
 
-// Define interfaces for our data
+// Initialize Supabase client
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Define interfaces based on your Supabase tables
 interface Volunteer {
   id: string;
-  name: string;
-  skills?: string[];
-  preferences?: string;
+  full_name: string;
+  skills: string;
+  preferences: string;
 }
 
 interface Event {
   id: string;
-  name: string;
+  event_name: string;
   description: string;
-  skills: string[];
-  date: string;
   location: string;
+  required_skills: string;
   urgency: string;
+  event_date: string;
   matchScore?: number;
+  assignedTo?: string;
 }
 
+// Global state to track event assignments
+const assignedEvents: Record<string, string> = {}; // eventId -> volunteerId
 
 const VolunteerMatching: React.FC = () => {
   // State variables
   const [volunteers, setVolunteers] = useState<Volunteer[]>([]);
   const [selectedVolunteer, setSelectedVolunteer] = useState<string>("");
   const [volunteerDetails, setVolunteerDetails] = useState<Volunteer | null>(null);
-  const [matchedEvents, setMatchedEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [allEvents, setAllEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const [expandedEvents, setExpandedEvents] = useState<boolean>(true);
-  const [assigningEvent, setAssigningEvent] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState<boolean>(false);
 
   
   useEffect(() => {
-    const fetchVolunteers = async () => {
-      try {
-        
-        const response = await fetch('/api/volunteerMatching');
-        const data = await response.json();
-        
-        if (data.success) {
-          setVolunteers(data.volunteers);
-        } else {
-          
-          setVolunteers([
-            {
-              id: "v1",
-              name: "Volunteer Name",
-              skills: ["deploy", "code"],
-              preferences: "night"
-            },
-            {
-              id: "v2",
-              name: "Jane Smith",
-              skills: ["design", "teaching"],
-              preferences: "weekend"
-            }
-          ]);
-        }
-      } catch (err) {
-        console.error("Error fetching volunteers", err);
-        console.log('Using hardcoded data for development');
-        
-        setVolunteers([
-          {
-            id: "v1",
-            name: "Volunteer Name",
-            skills: ["deploy", "code"],
-            preferences: "night"
-          },
-          {
-            id: "v2",
-            name: "Jane Smith",
-            skills: ["design", "teaching"],
-            preferences: "weekend"
-          }
-        ]);
-      }
-    };
-    
     fetchVolunteers();
+    fetchAllEvents();
   }, []);
+
+  // Fetch all volunteers from Supabase
+  const fetchVolunteers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('userprofile')
+        .select('id, full_name, skills, preferences');
+
+      if (error) {
+        console.error('Error fetching volunteers:', error);
+        return;
+      }
+
+      if (data) {
+        setVolunteers(data);
+      }
+    } catch (err) {
+      console.error('Error in fetchVolunteers:', err);
+    }
+  };
+
+  // Fetch all events from Supabase
+  const fetchAllEvents = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('eventdetails')
+        .select('id, event_name, description, location, required_skills, urgency, event_date');
+
+      if (error) {
+        console.error('Error fetching events:', error);
+        return;
+      }
+
+      if (data) {
+        // Check for already assigned events in volunteerhistory table
+        const { data: historyData, error: historyError } = await supabase
+          .from('volunteerhistory')
+          .select('user_id, event_id');
+
+        if (!historyError && historyData) {
+          // Update global assignedEvents
+          historyData.forEach(record => {
+            assignedEvents[record.event_id] = record.user_id;
+          });
+        }
+
+        // Store all events
+        setAllEvents(data);
+      }
+    } catch (err) {
+      console.error('Error in fetchAllEvents:', err);
+    }
+  };
+
+  
+  const normalizeText = (text: string | null | undefined): string[] => {
+    if (!text) return [];
+    return text.toLowerCase().split(/[,;]+/).map(item => item.trim()).filter(item => item.length > 0);
+  };
+
+  
+  const hasOverlap = (arr1: string[], arr2: string[]): boolean => {
+    if (arr1.length === 0 || arr2.length === 0) return false;
+    
+    for (const item1 of arr1) {
+      for (const item2 of arr2) {
+        if (item1 === item2 || item1.includes(item2) || item2.includes(item1)) {
+          return true;
+        }
+      }
+    }
+    
+    return false;
+  };
 
   // Handle volunteer selection
   const handleVolunteerChange = async (volunteerId: string) => {
     setSelectedVolunteer(volunteerId);
+    setLoading(true);
     
     if (!volunteerId) {
       setVolunteerDetails(null);
-      setMatchedEvents([]);
+      setEvents([]);
+      setLoading(false);
       return;
     }
     
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
-    
     try {
-      // Try to fetch from API
-      const response = await fetch('/api/volunteerMatching', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ volunteerId }),
-      });
+      // Fetch volunteer details
+      const { data: volunteerData, error: volunteerError } = await supabase
+        .from('userprofile')
+        .select('id, full_name, skills, preferences')
+        .eq('id', volunteerId)
+        .single();
       
-      const data = await response.json();
+      if (volunteerError) {
+        console.error('Error fetching volunteer details:', volunteerError);
+        setLoading(false);
+        return;
+      }
       
-      if (data.success) {
-        setVolunteerDetails(data.volunteer);
-        setMatchedEvents(data.matchedEvents);
+      if (volunteerData) {
+        setVolunteerDetails(volunteerData);
         
-        if (data.matchedEvents.length === 0) {
-          setError('No matching events found for this volunteer');
+        if (allEvents.length === 0) {
+          await fetchAllEvents();
         }
-      } else {
-        // Use hardcoded data for development
-        const volunteer = volunteers.find(v => v.id === volunteerId) || null;
-        setVolunteerDetails(volunteer);
         
-        // Hardcoded matched events
-        if (volunteerId === "v2") {
-          setMatchedEvents([
-            {
-              id: "e3",
-              name: "Code Workshop",
-              description: "Teaching coding to kids",
-              skills: ["code", "teaching"],
-              date: "2025-03-22",
-              location: "Public Library",
-              urgency: "low",
-              matchScore: 90
-            },
-            {
-              id: "e1",
-              name: "Blood Drive",
-              description: "Saving lives",
-              skills: ["packing", "assisting"],
-              date: "2025-03-15",
-              location: "Community Center",
-              urgency: "high",
-              matchScore: 45
+        // Normalize volunteer skills for matching
+        const volunteerSkills = normalizeText(volunteerData.skills);
+        
+        // Match volunteer to events
+        const matchedEvents = allEvents.map(event => {
+          let score = 0;
+          
+          // Normalize event skills
+          const eventSkills = normalizeText(event.required_skills);
+          
+          // Check for event assignment status
+          const isAssigned = assignedEvents[event.id] === volunteerId;
+          if (isAssigned) {
+            // This event is already assigned to this volunteer
+            score += 90;
+          }
+          
+          // Special case for coding and hackathon
+          if (
+            (volunteerSkills.some(skill => ["coding", "code", "programming", "developer"].includes(skill)) && 
+            (event.event_name.toLowerCase().includes("hackathon") || 
+              event.description.toLowerCase().includes("coding") || 
+              event.description.toLowerCase().includes("programming")))
+          ) {
+            score += 70;
+          }
+          // General skill match
+          else if (hasOverlap(volunteerSkills, eventSkills)) {
+            score += 60;
+          }
+          
+          // Add some variety based on volunteer ID
+          const volunteerIdSum = volunteerId.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+          const eventIdSum = event.id.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+          const affinityScore = (volunteerIdSum * eventIdSum) % 20;
+          score += affinityScore;
+          
+          // Urgency factor
+          if (event.urgency) {
+            const urgency = event.urgency.toLowerCase();
+            if (urgency === "extreme" || urgency === "very") {
+              score += 15;
+            } else if (urgency === "high") {
+              score += 12;
+            } else if (urgency === "medium") {
+              score += 8;
+            } else {
+              score += 5;
             }
-          ]);
-        } else {
-          setMatchedEvents([
-            {
-              id: "e1",
-              name: "Blood Drive",
-              description: "Saving lives",
-              skills: ["packing", "assisting"],
-              date: "2025-03-15",
-              location: "Community Center",
-              urgency: "high",
-              matchScore: 85
-            },
-            {
-              id: "e2",
-              name: "Donation",
-              description: "Donate",
-              skills: ["packing", "assisting"],
-              date: "2025-03-20",
-              location: "Downtown",
-              urgency: "medium",
-              matchScore: 70
-            }
-          ]);
-        }
+          }
+          
+          return {
+            ...event,
+            matchScore: Math.min(score, 100), 
+            assignedTo: assignedEvents[event.id]
+          };
+        });
+        
+        // Sort by match score (highest first)
+        const sortedEvents = matchedEvents.sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0));
+        
+        setEvents(sortedEvents);
       }
     } catch (err) {
-      console.error("Error fetching volunteers", err);
-      console.log('Using hardcoded data for development');
-      
-      const volunteer = volunteers.find(v => v.id === volunteerId) || null;
-      setVolunteerDetails(volunteer);
-      
-      
-      if (volunteerId === "v2") {
-        setMatchedEvents([
-          {
-            id: "e3",
-            name: "Code Workshop",
-            description: "Teaching coding to kids",
-            skills: ["code", "teaching"],
-            date: "2025-03-22",
-            location: "Public Library",
-            urgency: "low",
-            matchScore: 90
-          },
-          {
-            id: "e1",
-            name: "Blood Drive",
-            description: "Saving lives",
-            skills: ["packing", "assisting"],
-            date: "2025-03-15",
-            location: "Community Center",
-            urgency: "high",
-            matchScore: 45
-          }
-        ]);
-      } else {
-        setMatchedEvents([
-          {
-            id: "e1",
-            name: "Blood Drive",
-            description: "Saving lives",
-            skills: ["packing", "assisting"],
-            date: "2025-03-15",
-            location: "Community Center",
-            urgency: "high",
-            matchScore: 85
-          },
-          {
-            id: "e2",
-            name: "Donation",
-            description: "Donate",
-            skills: ["packing", "assisting"],
-            date: "2025-03-20",
-            location: "Downtown",
-            urgency: "medium",
-            matchScore: 70
-          }
-        ]);
-      }
+      console.error('Error in handleVolunteerChange:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle assignment of volunteer to event
-  const handleAssign = async (eventId: string) => {
+  // Handle assigning volunteer to event
+  const handleAssignEvent = async (eventId: string) => {
     if (!selectedVolunteer || !eventId) {
-      setError('Cannot assign: Missing volunteer or event');
       return;
     }
     
-    setAssigningEvent(eventId);
-    setError(null);
-    setSuccess(null);
-    
     try {
-      const response = await fetch('/api/assignVolunteer', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          volunteerId: selectedVolunteer,
-          eventId: eventId
-        }),
-      });
+      // Update the global tracking object
+      assignedEvents[eventId] = selectedVolunteer;
       
-      const data = await response.json();
+      // Then insert into volunteerhistory table
+      const { error } = await supabase
+        .from('volunteerhistory')
+        .insert([{ 
+          user_id: selectedVolunteer,
+          event_id: eventId,
+          participation_status: 'assigned'
+        }]);
       
-      if (data.success) {
-        const eventName = matchedEvents.find(e => e.id === eventId)?.name || 'event';
-        setSuccess(`Successfully assigned volunteer to ${eventName}`);
-      } else {
-        // For development, just show success
-        const eventName = matchedEvents.find(e => e.id === eventId)?.name || 'event';
-        setSuccess(`Successfully assigned volunteer to ${eventName}`);
+      if (error) {
+        console.error('Error assigning volunteer:', error);
+        return;
       }
+      
+      
+      setEvents(prev => prev.map(event => 
+        event.id === eventId 
+          ? { ...event, assignedTo: selectedVolunteer }
+          : event
+      ));
+      
     } catch (err) {
-      console.error("Error assigning volunteer to event", err);
-      console.log('Simulating successful assignment for development');
-      // For development, just show success
-      const eventName = matchedEvents.find(e => e.id === eventId)?.name || 'event';
-      setSuccess(`Successfully assigned volunteer to ${eventName}`);
-    } finally {
-      setAssigningEvent(null);
+      console.error('Error in handleAssignEvent:', err);
     }
   };
 
-  // Toggle the events dropdown
-  const toggleEventsDropdown = () => {
-    setExpandedEvents(!expandedEvents);
+  // Toggle events dropdown
+  const toggleEvents = () => {
+    setExpanded(!expanded);
   };
 
   return (
-    <div className="min-h-screen bg-[#e8dccf]">
-      {/* Navigation Bar - Matching Login Page Style */}
-      <nav className="bg-gray-800 text-white px-4 py-3 fixed top-0 left-0 right-0 z-10 shadow-lg">
-        <div className="flex items-center justify-between max-w-6xl mx-auto">
-          {/* Left side: Home */}
-          <Link href="/" className="text-xl font-bold">
-            Home
-          </Link>
-
-          {/* Right side: Login, Sign Out, Registration, Profile Management, Event Management, Volunteer Matching, Volunteer History, and Notification */}
-          <div className="flex items-center space-x-4">
-            <Link href="/login" className="hover:text-gray-400">
-              Login
-            </Link>
-            <Link href="/registration" className="hover:text-gray-400">
-              Registration
-            </Link>
-            <Link href="/profileManagement" className="hover:text-gray-400">
-              Profile Management
-            </Link>
-            <Link href="/eventManagement" className="hover:text-gray-400">
-              Event Management
-            </Link>
-            <Link href="/volunteerMatching" className="text-white font-medium">
-              Volunteer Matching
-            </Link>
-            <Link href="/volunteerHistory" className="hover:text-gray-400">
-              Volunteer History
-            </Link>
-            <button className="relative hover:text-gray-400">
-              {/* Notification Icon */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M15 17h5l-1.405-1.405A2.003 2.003 0 0118 14V9a6 6 0 10-12 0v5a2.003 2.003 0 01-1.595 1.595L4 17h5m6 0v1a3 3 0 11-6 0v-1"
-                />
-              </svg>
-              {/* Notification Badge */}
-              <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>
-            </button>
+    <div className="bg-[#7d8a73] min-h-screen">
+      {/* Sticky Navigation Bar */}
+      <header className="bg-[#1a2639] text-white p-3 sticky top-0 z-50 shadow-md">
+        <div className="max-w-md mx-auto flex justify-between">
+          <Link href="/" className="font-bold">Home</Link>
+          <div className="space-x-4">
+            <Link href="/volunteerMatching" className="font-bold"> Matching</Link>
+            <Link href="/volunteerHistory">History</Link>
           </div>
-        </div>
-      </nav>
-      
-      {/* Header - Adjusted with margin-top to accommodate fixed navbar */}
-      <header className="bg-green-100 py-6 border-b border-green-200 mt-14">
-        <div className="container mx-auto px-4">
-          <h1 className="text-center text-3xl font-bold">Volunteer App</h1>
         </div>
       </header>
-      
-      {/* Admin Welcome */}
-      <div className="container mx-auto px-6 py-6">
-        <h2 className="text-xl font-bold">Welcome, admin</h2>
-      </div>
-      
-      {/* Main Content */}
-      <div className="container mx-auto px-6 py-4 grid grid-cols-1 md:grid-cols-2 gap-10 max-w-7xl">
-        {/* Event Management Form - Left side */}
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <h2 className="text-xl font-bold mb-6 text-center">Event Management Form</h2>
-          <div className="space-y-6">
-            <div>
-              <label className="block mb-2 font-semibold">Event Name</label>
-              <input 
-                type="text" 
-                placeholder="enter event name" 
-                className="w-full border rounded-md p-2.5 bg-[#f9f1e8]"
-              />
-            </div>
-            
-            <div>
-              <label className="block mb-2 font-semibold">Event Description</label>
-              <textarea 
-                placeholder="enter description" 
-                className="w-full border rounded-md p-2.5 h-28 bg-[#f9f1e8]"
-              />
-            </div>
-            
-            <div>
-              <label className="block mb-2 font-semibold">Location</label>
-              <input 
-                type="text" 
-                placeholder="enter location" 
-                className="w-full border rounded-md p-2.5 bg-[#f9f1e8]"
-              />
-            </div>
-            
-            <div>
-              <label className="block mb-2 font-semibold">Required Skills</label>
-              <div className="relative">
-                <select className="w-full border rounded-md p-2.5 pr-8 appearance-none bg-[#f9f1e8]">
-                  <option value="">Required Skills</option>
-                  <option value="coding">Coding</option>
-                  <option value="teaching">Teaching</option>
-                  <option value="packing">Packing</option>
-                  <option value="assisting">Assisting</option>
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <label className="block mb-2 font-semibold">Urgency</label>
-              <div className="relative">
-                <select className="w-full border rounded-md p-2.5 pr-8 appearance-none bg-[#f9f1e8]">
-                  <option value="">Select Urgency</option>
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <label className="block mb-2 font-semibold">Date</label>
-              <input 
-                type="date" 
-                className="border rounded-md p-2.5 bg-[#f9f1e8]"
-              />
-            </div>
-            
-            <div className="pt-2">
-              <button className="bg-green-400 text-white px-8 py-2.5 rounded-md hover:bg-green-500 transition-colors font-medium w-full">
-                Submit
-              </button>
-            </div>
-          </div>
-        </div>
-        
-        {/* Volunteer Matching Form - Right side */}
-        <div className="bg-white rounded-lg shadow-md p-8">
-          <h2 className="text-xl font-bold mb-6 text-center">Volunteer Matching Form</h2>
+
+      {/* Main Content with proper spacing */}
+      <div className="flex justify-center py-6">
+        <div className="w-full max-w-md bg-[#f6efdf] p-6 rounded-lg shadow-lg">
+          <h1 className="text-center text-2xl font-bold text-[#333333] mb-6">Volunteer Matching</h1>
           
-          {/* Error and Success Messages */}
-          {success && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md mb-6 text-sm">
-              {success}
+          {/* Volunteer Selection Dropdown */}
+          <div className="mb-4">
+            <select
+              value={selectedVolunteer}
+              onChange={(e) => handleVolunteerChange(e.target.value)}
+              className="w-full p-3 bg-[#f0d4c5] border border-[#d2b6a8] rounded text-center text-gray-800 appearance-none"
+              disabled={loading}
+            >
+              <option value="">Select a Volunteer</option>
+              {volunteers.map(volunteer => (
+                <option key={volunteer.id} value={volunteer.id}>
+                  {volunteer.full_name}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          {/* Loading indicator */}
+          {loading && (
+            <div className="text-center py-2 text-gray-600">
+              Loading...
             </div>
           )}
           
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-md mb-6 text-sm">
-              {error}
-            </div>
-          )}
-          
-          {/* Volunteer Selection */}
-          <div className="mb-6">
-            <div className="relative">
-              <select
-                value={selectedVolunteer}
-                onChange={(e) => handleVolunteerChange(e.target.value)}
-                className="w-full border rounded-md p-2.5 pr-8 appearance-none"
-                disabled={loading}
-              >
-                <option value="">Select a Volunteer</option>
-                {volunteers.map(volunteer => (
-                  <option key={volunteer.id} value={volunteer.id}>
-                    {volunteer.name}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                  <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-                </svg>
-              </div>
-            </div>
-            
-            {loading && (
-              <div className="mt-2 text-sm text-gray-600">
-                Loading volunteer matches...
-              </div>
-            )}
-          </div>
-          
-          {/* Selected Volunteer Information */}
+          {/* Volunteer Details Card */}
           {volunteerDetails && (
-            <div className="mb-8">
-              <h3 className="text-2xl font-bold text-pink-500 mb-4 text-center">{volunteerDetails.name}</h3>
-              <div className="space-y-2">
-                {volunteerDetails.skills && (
-                  <p className="text-center"><span className="font-semibold">Skills:</span> {volunteerDetails.skills.join(',')}</p>
-                )}
-                {volunteerDetails.preferences && (
-                  <p className="text-center"><span className="font-semibold">Preferences:</span> {volunteerDetails.preferences}</p>
-                )}
-              </div>
+            <div className="p-4 mb-4 bg-[#f0d4c5] border border-[#d2b6a8] rounded">
+              <h2 className="text-xl font-bold text-[#e86363] mb-1">{volunteerDetails.full_name}</h2>
+              <p className="text-gray-800 text-sm mb-1">
+                <span className="font-bold">Skills:</span> {volunteerDetails.skills}
+              </p>
+              {volunteerDetails.preferences && volunteerDetails.preferences !== "EMPTY" && volunteerDetails.preferences !== "N/A" && (
+                <p className="text-gray-800 text-sm">
+                  <span className="font-bold">Preferences:</span> {volunteerDetails.preferences}
+                </p>
+              )}
             </div>
           )}
           
-          {/* Matching Events */}
-          {volunteerDetails && matchedEvents.length > 0 && (
+          {/* Events Section  */}
+          {volunteerDetails && events.length > 0 && (
             <div>
               <div 
-                className="p-3 bg-gray-100 flex items-center justify-between rounded-t-md border border-gray-200 cursor-pointer mb-0"
-                onClick={toggleEventsDropdown}
+                className="p-3 bg-[#f0d4c5] flex items-center justify-between rounded-t border border-[#d2b6a8] cursor-pointer"
+                onClick={toggleEvents}
               >
-                <span className="font-semibold">Events</span>
+                <span className="font-bold text-gray-800">Events</span>
                 <svg 
-                  className={`h-5 w-5 transition-transform ${expandedEvents ? 'transform rotate-180' : ''}`}
+                  className={`h-5 w-5 text-gray-600 transition-transform ${expanded ? 'transform rotate-180' : ''}`}
                   xmlns="http://www.w3.org/2000/svg" 
                   viewBox="0 0 20 20" 
                   fill="currentColor"
@@ -509,38 +340,43 @@ const VolunteerMatching: React.FC = () => {
                 </svg>
               </div>
               
-              {expandedEvents && (
-                <div className="border border-t-0 border-gray-200 rounded-b-md shadow-sm divide-y divide-gray-200">
-                  {matchedEvents.map((event, index) => (
+              {expanded && (
+                <div className="border-x border-b border-[#d2b6a8] rounded-b overflow-hidden max-h-64 overflow-y-auto">
+                  {events.map((event, index) => (
                     <div 
                       key={event.id} 
-                      className={`p-4 ${index === 0 ? 'bg-gray-100' : ''}`}
+                      className={`p-3 ${index % 2 === 0 ? 'bg-[#f0d4c5]' : 'bg-[#f6efdf]'} relative`}
                     >
-                      <div className="flex justify-between items-start">
-                        <div className="space-y-2 flex-1">
-                          <div className="font-bold text-lg">{event.name}</div>
-                          <div>{event.description}</div>
-                          <div className="text-sm">
-                            <span className="font-semibold">Skills:</span> {event.skills.join(',')}
+                      <div className="font-bold text-gray-800">{event.event_name}</div>
+                      <div className="text-sm text-gray-700">{event.description}</div>
+                      <div className="text-xs text-gray-600 mt-1">
+                        <span className="font-bold">Skills:</span> {event.required_skills}
+                      </div>
+                      <div className="text-xs text-gray-600 mt-1">
+                        <span className="font-bold">Match Score:</span> {event.matchScore}%
+                      </div>
+                      
+                      {/* Assignment status or button */}
+                      <div className="mt-2">
+                        {event.assignedTo === selectedVolunteer ? (
+                          <div className="bg-green-100 border border-green-300 text-green-800 px-2 py-1 rounded text-xs inline-block">
+                            Already assigned to you
                           </div>
-                          
-                          <div className="pt-3">
-                            <button
-                              className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition-colors w-full max-w-xs"
-                              onClick={() => handleAssign(event.id)}
-                              disabled={assigningEvent === event.id}
-                            >
-                              {assigningEvent === event.id ? 'Assigning...' : 'Assign Volunteer'}
-                            </button>
-                          </div>
-                        </div>
-                        
-                        {index === 0 && (
-                          <div className="text-green-600 flex-shrink-0 ml-2 text-xl">
-                            ✓
-                          </div>
+                        ) : (
+                          <button
+                            onClick={() => handleAssignEvent(event.id)}
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded text-xs"
+                          >
+                            Assign to me
+                          </button>
                         )}
                       </div>
+                      
+                      {index === 0 && (
+                        <div className="absolute right-3 top-3 text-green-500 text-xl">
+                          ✓
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
