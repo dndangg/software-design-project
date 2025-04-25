@@ -102,6 +102,9 @@ export default function ProfileManagement() {
               <option value="coding">Coding</option>
               <option value="design">Design</option>
               <option value="marketing">Marketing</option>
+              <option value="teamwork">Teamwork</option>
+              <option value="writing">Writing</option>
+              <option value="other">Other</option>
             </select>
           </div>
 
