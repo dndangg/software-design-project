@@ -37,13 +37,13 @@ const Signout: React.FC = () => {
       </nav>
 
       {/* Main Content */}
-      <div className="flex items-center space-x-4 bg-[#f3e6d5] p-16 rounded-lg shadow-lg w-[95%] max-w-4xl border border-[#554f42]">
+      <div className="flex flex-col items-center space-y-6 bg-[#f3e6d5] p-16 rounded-lg shadow-lg w-[95%] max-w-4xl border border-[#554f42]">
         <h1 className="text-center text-3xl font-bold text-[#2d2a26] font-serif">
           You have been signed out! 
         </h1>
-        <Link href="/">
+        <Link href="/login">
           <button className="px-6 py-3 bg-[#554f42] text-white rounded-lg hover:bg-[#403b32] transition">
-            Return to Homepage
+            Return to login page
           </button>
       </Link>
       </div>
