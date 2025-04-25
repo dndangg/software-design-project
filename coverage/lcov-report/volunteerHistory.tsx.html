@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">98.81% </span>
+                <span class="strong">96.11% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>167/169</span>
+                <span class='fraction'>173/180</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">90.9% </span>
+                <span class="strong">73.33% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>10/11</span>
+                <span class='fraction'>11/15</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">98.81% </span>
+                <span class="strong">96.11% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>167/169</span>
+                <span class='fraction'>173/180</span>
             </div>
         
             
@@ -232,7 +232,18 @@
 <a name='L167'></a><a href='#L167'>167</a>
 <a name='L168'></a><a href='#L168'>168</a>
 <a name='L169'></a><a href='#L169'>169</a>
-<a name='L170'></a><a href='#L170'>170</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -268,6 +279,15 @@
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -371,6 +391,8 @@
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">7x</span>
@@ -407,7 +429,7 @@ import Link from "next/link";
 &nbsp;
 // Define TypeScript interface for volunteer history data
 interface VolunteerHistoryItem {
-  id: number;
+  id: string; // Changed from number to string to match UUID
   volunteerName: string;
   participationStatus: string;
   eventName: string;
@@ -436,7 +458,16 @@ const VolunteerHistory: React.FC = () =&gt; {
     const fetchVolunteerHistory = async () =&gt; {
       try {
         const response = await fetch('/api/volunteerHistory');
+        
+        if (!response.ok) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >          console.error('Response not OK:', response.status, response.statusText);</span>
+<span class="cstat-no" title="statement not covered" >          setError(`HTTP error: ${response.status}`);</span>
+<span class="cstat-no" title="statement not covered" >          setLoading(false);</span>
+<span class="cstat-no" title="statement not covered" >          return;</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+        
         const result: ApiResponse = await response.json();
+        console.log('API Response:', result); // Debug: Log the response
         
         if (result.success) {
           setHistoryData(result.data);
@@ -445,7 +476,7 @@ const VolunteerHistory: React.FC = () =&gt; {
 <span class="cstat-no" title="statement not covered" >        }</span>
       } catch (err) {
         console.error('Error fetching volunteer history:', err);
-        setError('Failed to fetch volunteer history.');
+        setError('Error fetching volunteer history: ' + (err instanceof Error ? err.message<span class="branch-0 cbranch-no" title="branch not covered" > : String(err)</span>));
       } finally {
         setLoading(false);
       }
@@ -547,7 +578,9 @@ const VolunteerHistory: React.FC = () =&gt; {
                       &lt;td className="border border-black p-2"&gt;{item.eventDescription}&lt;/td&gt;
                       &lt;td className="border border-black p-2"&gt;{item.location}&lt;/td&gt;
                       &lt;td className="border border-black p-2"&gt;
-                        {item.requiredSkills.join(", ")}
+                        {Array.isArray(item.requiredSkills) 
+                          ? item.requiredSkills.join(<span class="branch-0 cbranch-no" title="branch not covered" >", ")</span>
+                          : item.requiredSkills} {/* Added safety check */}
                       &lt;/td&gt;
                       &lt;td className="border border-black p-2"&gt;{item.urgency}&lt;/td&gt;
                       &lt;td className="border border-black p-2"&gt;{item.eventDate}&lt;/td&gt;
@@ -577,7 +610,7 @@ export default VolunteerHistory;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-03-22T03:13:25.039Z
+                at 2025-04-25T04:24:33.522Z
             </div>
         <script src="prettify.js"></script>
         <script>
