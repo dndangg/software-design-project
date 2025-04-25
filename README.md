@@ -44,5 +44,6 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/b
 1. Clone the project
 2. Run npm install in the project directory
 3. Deploy with npm run dev
+4. To generate the Report, install this line of code "npm install jspdf jspdf-autotable papaparse"
 
 Create new pages in /src/pages
