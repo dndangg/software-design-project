@@ -78,25 +78,6 @@ const Login: React.FC = () => {
             <Link href="/volunteerHistory" className="hover:text-gray-400">
               Volunteer History
             </Link>
-            <button className="relative hover:text-gray-400">
-              {/* Notification Icon */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                className="w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M15 17h5l-1.405-1.405A2.003 2.003 0 0118 14V9a6 6 0 10-12 0v5a2.003 2.003 0 01-1.595 1.595L4 17h5m6 0v1a3 3 0 11-6 0v-1"
-                />
-              </svg>
-              {/* Notification Badge */}
-              <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>
-            </button>
           </div>
         </div>
       </nav>

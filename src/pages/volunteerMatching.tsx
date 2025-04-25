@@ -32,6 +32,8 @@ interface Event {
 const assignedEvents: Record<string, string> = {}; // eventId -> volunteerId
 
 const VolunteerMatching: React.FC = () => {
+  // Navigation bar and notifications
+  
   // State variables
   const [volunteers, setVolunteers] = useState<Volunteer[]>([]);
   const [selectedVolunteer, setSelectedVolunteer] = useState<string>("");
@@ -265,18 +267,96 @@ const VolunteerMatching: React.FC = () => {
     setExpanded(!expanded);
   };
 
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState<{ id: number; message: string }[]>([]);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await fetch("/api/notifications");
+        const data = await response.json();
+        setNotifications(data.notifications || []);
+      } catch (error) {
+        console.error("Failed to fetch notifications:", error);
+      }
+    };
+    fetchNotifications();
+  }, []);
+
   return (
-    <div className="bg-[#7d8a73] min-h-screen">
-      {/* Sticky Navigation Bar */}
-      <header className="bg-[#1a2639] text-white p-3 sticky top-0 z-50 shadow-md">
-        <div className="max-w-md mx-auto flex justify-between">
-          <Link href="/" className="font-bold">Home</Link>
-          <div className="space-x-4">
-            <Link href="/volunteerMatching" className="font-bold"> Matching</Link>
-            <Link href="/volunteerHistory">History</Link>
+    <div className="fixed inset-0 flex items-center justify-center bg-[#808977]">
+      {/* Navigation Bar */}
+      <nav className="bg-gray-800 text-white px-4 py-3 fixed top-0 left-0 right-0 z-10 shadow-lg">
+        <div className="flex items-center justify-between max-w-6xl mx-auto">
+          {/* Left side: Home */}
+          <Link href="/" className="text-xl font-bold">
+            Home
+          </Link>
+
+          {/* Right side: Login, Sign Out, Registration, Profile Management, Event Management, Volunteer Matching, Volunteer History, and Notification */}
+          <div className="flex items-center space-x-4">
+            <Link href="/login" className="hover:text-gray-400">
+              Login
+            </Link>
+            <Link href="/signout" className="hover:text-gray-400">
+              Sign Out
+            </Link>
+            <Link href="/registration" className="hover:text-gray-400">
+              Registration
+            </Link>
+            <Link href="/profileManagement" className="hover:text-gray-400">
+              Profile Management
+            </Link>
+            <Link href="/eventManagement" className="hover:text-gray-400">
+              Event Management
+            </Link>
+            <Link href="/volunteerMatching" className="hover:text-gray-400">
+              Volunteer Matching
+            </Link>
+            <Link href="/volunteerHistory" className="hover:text-gray-400">
+              Volunteer History
+            </Link>
+            <div className="relative z-50">
+              <button
+                className="relative hover:text-gray-400"
+                onClick={() => setShowNotifications(!showNotifications)}
+              >
+                {/* Notification Icon */}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M15 17h5l-1.405-1.405A2.003 2.003 0 0118 14V9a6 6 0 10-12 0v5a2.003 2.003 0 01-1.595 1.595L4 17h5m6 0v1a3 3 0 11-6 0v-1"
+                  />
+                </svg>
+                {/* Notification Badge */}
+                {notifications.length > 0 && ( // checks if there are notifications
+                  <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>
+                )}
+              </button>
+
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg z-50">
+                  <ul className="p-2 text-black">
+                    {notifications.map((notification) => (
+                      <li key={notification.id} className="py-1 border-b last:border-b-0">
+                        {notification.message}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      </header>
+      </nav>
 
       {/* Main Content with proper spacing */}
       <div className="flex justify-center py-6">
