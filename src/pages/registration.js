@@ -84,18 +84,9 @@ export default function RegistrationForm() {  //
         <h1 className="register-title">New Here? Register Below!</h1>
 
         <form onSubmit={handleSubmit}>
-          <label htmlFor="accountType">Account Type</label>
-          <input
-            type="text"
-            id="accountType"
-            name="accountType"
-            placeholder="Enter account type"
-            value={formData.accountType}
-            onChange={handleChange}
-            required
-          />
 
-          <label htmlFor="email">Username (Email Address)</label>
+
+          <label htmlFor="email">Username (Email Address)*</label>
           <input
             type="email"
             id="email"
@@ -106,7 +97,7 @@ export default function RegistrationForm() {  //
             required
           />
 
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password">Password*</label>
           <input
             type="password"
             id="password"
@@ -117,7 +108,7 @@ export default function RegistrationForm() {  //
             required
           />
 
-          <label htmlFor="full_name">Full Name</label>
+          <label htmlFor="full_name">Full Name*</label>
           <input
             type="full_name"
             id="full_name"
@@ -205,11 +196,20 @@ export default function RegistrationForm() {  //
             required
           />
           
-          <button type="submit" className="register-button">Register</button>
+          <p className="register-login-text mt-4">
+        * : Required Field
+        </p>
+
+        <button
+  type="submit"
+  className="bg-[#3d3f32] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200 mt-4 mb-4"
+>
+  Register
+</button>
         </form>
 
         <p className="register-login-text">
-          Already have an account? <Link href="/login">Go to login page</Link>
+        Already have an account? <Link href="/login" className="text-blue-700 underline hover:underline">Go to login page</Link>
         </p>
       </div>
     </div>

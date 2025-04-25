@@ -9,8 +9,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   // Extract fields from the request
-  const { accountType, email, password, full_name, address1, address2, city, state, zip, skills, preferences, availability } = req.body;
-  if (!accountType || !email || !password || !full_name) {
+  const { email, password, full_name, address1, address2, city, state, zip, skills, preferences, availability } = req.body;
+  if (!email || !password || !full_name) {
     return res.status(400).json({ error: "Missing required fields!" });
   }
 
