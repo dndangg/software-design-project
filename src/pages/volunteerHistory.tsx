@@ -2,6 +2,12 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import jsPDF from "jspdf";
+import { createClient } from "@supabase/supabase-js";
+
+// Initialize Supabase client
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Define TypeScript interface for volunteer history data
 interface VolunteerHistoryItem {
@@ -29,27 +35,95 @@ const VolunteerHistory: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch volunteer history data when component mounts
+  
   useEffect(() => {
     const fetchVolunteerHistory = async () => {
       try {
-        const response = await fetch('/api/volunteerHistory');
+        // get the volunteer history records with basic join
+        const { data: rawHistoryData, error: historyError } = await supabase
+          .from('volunteerhistory')
+          .select(`
+            id,
+            user_id,
+            event_id,
+            participation_status
+          `);
         
-        if (!response.ok) {
-          console.error('Response not OK:', response.status, response.statusText);
-          setError(`HTTP error: ${response.status}`);
+        if (historyError) {
+          console.error('Response not OK:', historyError);
+          setError(`Error: ${historyError.message}`);
           setLoading(false);
           return;
         }
         
-        const result: ApiResponse = await response.json();
-        console.log('API Response:', result); // Debug: Log the response
-        
-        if (result.success) {
-          setHistoryData(result.data);
-        } else {
-          setError(result.message || 'Failed to fetch volunteer history');
+        if (!rawHistoryData || rawHistoryData.length === 0) {
+          setHistoryData([]);
+          setLoading(false);
+          return;
         }
+        
+        // fetch all user profiles
+        const { data: users, error: usersError } = await supabase
+          .from('userprofile')
+          .select('id, full_name');
+          
+        if (usersError) {
+          console.error('Error fetching users:', usersError);
+          setError('Failed to fetch user data');
+          setLoading(false);
+          return;
+        }
+        
+        // Map users by ID for quick lookup
+        const userMap = new Map();
+        users?.forEach(user => {
+          userMap.set(user.id, user.full_name);
+        });
+        
+        // Fetch all event details
+        const { data: events, error: eventsError } = await supabase
+          .from('eventdetails')
+          .select('*');
+          
+        if (eventsError) {
+          console.error('Error fetching events:', eventsError);
+          setError('Failed to fetch event data');
+          setLoading(false);
+          return;
+        }
+        
+        // Map events by ID for quick lookup
+        const eventMap = new Map();
+        events?.forEach(event => {
+          eventMap.set(event.id, {
+            name: event.event_name,
+            description: event.description,
+            location: event.location,
+            requiredSkills: event.required_skills,
+            urgency: event.urgency,
+            eventDate: event.event_date
+          });
+        });
+        
+        // Combine the data to create a complete history
+        const formattedData: VolunteerHistoryItem[] = rawHistoryData.map(record => {
+          const userName = userMap.get(record.user_id) || 'Unknown';
+          const eventDetails = eventMap.get(record.event_id) || {};
+          
+          return {
+            id: record.id,
+            volunteerName: userName,
+            participationStatus: record.participation_status,
+            eventName: eventDetails.name || 'Unknown Event',
+            eventDescription: eventDetails.description || '',
+            location: eventDetails.location || '',
+            requiredSkills: eventDetails.requiredSkills || [],
+            urgency: eventDetails.urgency || '',
+            eventDate: eventDetails.eventDate || ''
+          };
+        });
+        
+        setHistoryData(formattedData);
       } catch (err) {
         console.error('Error fetching volunteer history:', err);
         setError('Error fetching volunteer history: ' + (err instanceof Error ? err.message : String(err)));
@@ -61,7 +135,7 @@ const VolunteerHistory: React.FC = () => {
     fetchVolunteerHistory();
   }, []);
 
-  // Function to export data as PDF - simplified approach
+  // Function to export data as PDF 
   const generatePDFReport = () => {
     if (historyData.length === 0) {
       alert("No data available to export");
@@ -117,7 +191,7 @@ const VolunteerHistory: React.FC = () => {
     doc.save(`volunteer_history_${new Date().toLocaleDateString().replace(/\//g, '-')}.pdf`);
   };
 
-  // Function to export data as CSV - simplified approach
+  // Function to export data as CSV 
   const generateCSVReport = () => {
     if (historyData.length === 0) {
       alert("No data available to export");
@@ -143,7 +217,7 @@ const VolunteerHistory: React.FC = () => {
       `"${item.eventName.replace(/"/g, '""')}"`,
       `"${item.eventDescription.replace(/"/g, '""')}"`,
       `"${item.location.replace(/"/g, '""')}"`,
-      `"${Array.isArray(item.requiredSkills) ? item.requiredSkills.join(", ").replace(/"/g, '""') : (item.requiredSkills as string).replace(/"/g, '""')}"`,
+      `"${Array.isArray(item.requiredSkills) ? item.requiredSkills.join(", ").replace(/"/g, '""') : item.requiredSkills.replace(/"/g, '""')}"`,
       `"${item.urgency.replace(/"/g, '""')}"`,
       `"${item.eventDate.replace(/"/g, '""')}"`
     ].join(","));
@@ -222,7 +296,7 @@ const VolunteerHistory: React.FC = () => {
         <div className="bg-[#f3e6d5] p-10 rounded-lg shadow-lg w-[80%] text-[#2d2a26]">
           <h1 className="text-center text-3xl font-bold mb-6 text-[#2d2a26]">Volunteer History</h1>
           
-          {/* Export Buttons - Generate Real Files When Clicked */}
+          {/* Export Buttons */}
           <div className="flex justify-end mb-4 space-x-4">
             <button 
               onClick={generatePDFReport}
