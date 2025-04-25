@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   // Extract fields from the request
-  const { accountType, email, password, full_name, address, city, state, zipcode, skills, preferences, availability } = req.body;
+  const { accountType, email, password, full_name, address1, address2, city, state, zip, skills, preferences, availability } = req.body;
   if (!accountType || !email || !password || !full_name) {
     return res.status(400).json({ error: "Missing required fields!" });
   }
@@ -33,10 +33,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     .insert([{
       id: userId,
       full_name,
-      address,
+      address1,
+      address2,
       city,
       state,
-      zipcode,
+      zip,
       skills,
       preferences,
       availability
