@@ -1,7 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react"
 import Link from "next/link";
+import { useRouter } from "next/router";
 
-const successfulLogin: React.FC = () => {
+
+const SuccessfulLogin: React.FC = () => {
+  const router = useRouter();
+  useEffect(() => {
+    // Redirect to the home page after a successful login
+    const timer = setTimeout(() => {
+      router.push("/");
+    }, 3000); // Redirect after 3 seconds
+
+    // Cleanup the timer on component unmount
+    return () => clearTimeout(timer);
+  })
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#808977]">
           {/* Navigation Bar */}
@@ -60,9 +73,12 @@ const successfulLogin: React.FC = () => {
         <h1 className="text-center text-3xl font-bold text-[#2d2a26] font-serif">
           Successfully logged in!
         </h1>
+        <p className="text-center text-xl mt-4 text-[#2d2a26]">
+          Redirecting you to the home page...
+        </p>
       </div>
     </div>
   );
 };
 
-export default successfulLogin;
+export default SuccessfulLogin;
