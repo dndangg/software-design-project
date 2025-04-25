@@ -1,14 +1,11 @@
 // pages/volunteerHistory.tsx
-// npm install jspdf jspdf-autotable papaparse "install this line of code first"
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { jsPDF } from "jspdf";
-import autoTable from "jspdf-autotable";
-import Papa from "papaparse";
+import jsPDF from "jspdf";
 
 // Define TypeScript interface for volunteer history data
 interface VolunteerHistoryItem {
-  id: string; // Changed from number to string to match UUID
+  id: string;
   volunteerName: string;
   participationStatus: string;
   eventName: string;
@@ -32,7 +29,7 @@ const VolunteerHistory: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch volunteer history data 
+  // Fetch volunteer history data when component mounts
   useEffect(() => {
     const fetchVolunteerHistory = async () => {
       try {
@@ -46,7 +43,7 @@ const VolunteerHistory: React.FC = () => {
         }
         
         const result: ApiResponse = await response.json();
-        console.log('API Response:', result); 
+        console.log('API Response:', result); // Debug: Log the response
         
         if (result.success) {
           setHistoryData(result.data);
@@ -64,111 +61,104 @@ const VolunteerHistory: React.FC = () => {
     fetchVolunteerHistory();
   }, []);
 
-  // Function to export data as PDF - generates a downloadable file
-  const exportToPDF = () => {
+  // Function to export data as PDF - simplified approach
+  const generatePDFReport = () => {
     if (historyData.length === 0) {
       alert("No data available to export");
       return;
     }
 
     const doc = new jsPDF();
-    const title = "Volunteer History Report";
-    const today = new Date().toLocaleDateString();
+    doc.setFontSize(16);
+    doc.text("Volunteer History Report", 20, 20);
+    doc.setFontSize(10);
+    doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 30);
+
+    let y = 40;
     
-    // Add title and date
-    doc.setFontSize(18);
-    doc.text(title, 14, 22);
-    doc.setFontSize(12);
-    doc.text(`Generated on: ${today}`, 14, 30);
-    
-    // Define the table structure and data
-    const tableColumn = [
-      "Volunteer Name", 
-      "Status", 
-      "Event", 
-      "Description", 
-      "Location", 
-      "Skills", 
-      "Urgency",
-      "Date"
-    ];
-    
-    const tableRows = historyData.map(item => [
-      item.volunteerName,
-      item.participationStatus,
-      item.eventName,
-      item.eventDescription,
-      item.location,
-      Array.isArray(item.requiredSkills) ? item.requiredSkills.join(", ") : item.requiredSkills,
-      item.urgency,
-      item.eventDate
-    ]);
-    
-    // Generate the PDF with autoTable - using the updated autoTable from import
-    autoTable(doc, {
-      head: [tableColumn],
-      body: tableRows,
-      startY: 40,
-      theme: 'grid',
-      styles: {
-        fontSize: 8,
-        cellPadding: 3,
-      },
-      columnStyles: {
-        3: { cellWidth: 40 } 
-      },
-      headStyles: {
-        fillColor: [232, 197, 183], // #e8c5b7
-        textColor: [45, 42, 38],    // #2d2a26
-        fontStyle: 'bold'
-      },
-      alternateRowStyles: {
-        fillColor: [243, 230, 213]  // #f3e6d5 
+    // Add each volunteer history item to the PDF
+    historyData.forEach((item, index) => {
+      doc.setFontSize(12);
+      doc.text(`Volunteer Record ${index + 1}`, 20, y);
+      y += 7;
+      
+      doc.setFontSize(10);
+      doc.text(`Volunteer: ${item.volunteerName}`, 20, y);
+      y += 7;
+      doc.text(`Status: ${item.participationStatus}`, 20, y);
+      y += 7;
+      doc.text(`Event: ${item.eventName}`, 20, y);
+      y += 7;
+      doc.text(`Description: ${item.eventDescription}`, 20, y);
+      y += 7;
+      doc.text(`Location: ${item.location}`, 20, y);
+      y += 7;
+      
+      // Handle skills array
+      const skills = Array.isArray(item.requiredSkills) 
+        ? item.requiredSkills.join(", ")
+        : item.requiredSkills;
+      
+      doc.text(`Required Skills: ${skills}`, 20, y);
+      y += 7;
+      doc.text(`Urgency: ${item.urgency}`, 20, y);
+      y += 7;
+      doc.text(`Date: ${item.eventDate}`, 20, y);
+      y += 15;
+
+      // Add a new page if we're running out of space
+      if (y > 270 && index < historyData.length - 1) {
+        doc.addPage();
+        y = 20;
       }
     });
     
-    // Save the PDF - file download in the browser
-    doc.save(`volunteer_history_${today.replace(/\//g, '-')}.pdf`);
+    // Save the PDF
+    doc.save(`volunteer_history_${new Date().toLocaleDateString().replace(/\//g, '-')}.pdf`);
   };
 
-  // Function to export data as CSV - generates a downloadable file
-  const exportToCSV = () => {
+  // Function to export data as CSV - simplified approach
+  const generateCSVReport = () => {
     if (historyData.length === 0) {
       alert("No data available to export");
       return;
     }
 
-    // Prepare data for CSV export using PapaParse
-    const data = historyData.map(item => ({
-      'Volunteer Name': item.volunteerName,
-      'Participation Status': item.participationStatus,
-      'Event Name': item.eventName,
-      'Event Description': item.eventDescription,
-      'Location': item.location,
-      'Required Skills': Array.isArray(item.requiredSkills) ? item.requiredSkills.join(', ') : item.requiredSkills,
-      'Urgency': item.urgency,
-      'Event Date': item.eventDate
-    }));
+    // Define headers
+    const headers = [
+      "Volunteer Name",
+      "Participation Status",
+      "Event Name",
+      "Event Description",
+      "Location",
+      "Required Skills",
+      "Urgency",
+      "Event Date"
+    ].join(",");
     
-    // Convert to CSV using PapaParse
-    const csv = Papa.unparse(data);
+    // Create CSV rows
+    const rows = historyData.map(item => [
+      `"${item.volunteerName.replace(/"/g, '""')}"`,
+      `"${item.participationStatus.replace(/"/g, '""')}"`,
+      `"${item.eventName.replace(/"/g, '""')}"`,
+      `"${item.eventDescription.replace(/"/g, '""')}"`,
+      `"${item.location.replace(/"/g, '""')}"`,
+      `"${Array.isArray(item.requiredSkills) ? item.requiredSkills.join(", ").replace(/"/g, '""') : item.requiredSkills.replace(/"/g, '""')}"`,
+      `"${item.urgency.replace(/"/g, '""')}"`,
+      `"${item.eventDate.replace(/"/g, '""')}"`
+    ].join(","));
     
-    // Create download link - file download in the browser
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
+    // Combine headers and rows
+    const csvContent = `data:text/csv;charset=utf-8,${headers}\n${rows.join("\n")}`;
+    const encodedUri = encodeURI(csvContent);
+    
+    // Create and trigger download link
     const link = document.createElement("a");
-    const today = new Date().toLocaleDateString();
-    link.setAttribute("href", url);
-    link.setAttribute("download", `volunteer_history_${today.replace(/\//g, '-')}.csv`);
-    link.style.visibility = "hidden";
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `volunteer_history_${new Date().toLocaleDateString().replace(/\//g, '-')}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    
-    
-    setTimeout(() => {
-      URL.revokeObjectURL(url);
-    }, 100);
   };
 
   return (
@@ -232,27 +222,27 @@ const VolunteerHistory: React.FC = () => {
         <div className="bg-[#f3e6d5] p-10 rounded-lg shadow-lg w-[80%] text-[#2d2a26]">
           <h1 className="text-center text-3xl font-bold mb-6 text-[#2d2a26]">Volunteer History</h1>
           
-          {/* Buttons - Generate Real Files When Clicked */}
+          {/* Export Buttons - Generate Real Files When Clicked */}
           <div className="flex justify-end mb-4 space-x-4">
             <button 
-              onClick={exportToPDF}
+              onClick={generatePDFReport}
               className="bg-[#808977] hover:bg-[#6a7361] text-white py-2 px-4 rounded flex items-center"
               disabled={loading || historyData.length === 0}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clipRule="evenodd" />
               </svg>
-              Generate PDF File
+              PDF Report
             </button>
             <button 
-              onClick={exportToCSV}
+              onClick={generateCSVReport}
               className="bg-[#808977] hover:bg-[#6a7361] text-white py-2 px-4 rounded flex items-center"
               disabled={loading || historyData.length === 0}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
-              Generate CSV File
+              CSV Report
             </button>
           </div>
           
@@ -290,7 +280,7 @@ const VolunteerHistory: React.FC = () => {
                       <td className="border border-black p-2">
                         {Array.isArray(item.requiredSkills) 
                           ? item.requiredSkills.join(", ")
-                          : item.requiredSkills} {/* Added safety check */}
+                          : item.requiredSkills}
                       </td>
                       <td className="border border-black p-2">{item.urgency}</td>
                       <td className="border border-black p-2">{item.eventDate}</td>
