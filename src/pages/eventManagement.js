@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import jsPDF from "jspdf"; // ✅ Import jsPDF
+import jsPDF from "jspdf"; 
 
 export default function EventManagement() {
   const [formData, setFormData] = useState({
@@ -81,7 +81,7 @@ export default function EventManagement() {
     }
   };
 
-  // ✅ CSV Report using API
+  
   const generateCSVReport = async () => {
     try {
       const res = await fetch("/api/eventMan", {
@@ -120,7 +120,7 @@ export default function EventManagement() {
     }
   };
 
-  // ✅ PDF Report using API
+  
   const generatePDFReport = async () => {
     try {
       const res = await fetch("/api/eventMan", {
