@@ -1,7 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const Signout: React.FC = () => {
+
+    const router = useRouter();
+    useEffect(() => {
+      // Redirect to the login page after signing out
+      const timer = setTimeout(() => {
+        router.push("/login");
+      }, 3000); // Redirect after 3 seconds
+  
+      // Cleanup the timer on component unmount
+      return () => clearTimeout(timer);
+    })
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#808977]">
           {/* Navigation Bar */}
